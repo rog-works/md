@@ -1,17 +1,27 @@
 'use strict'
 
 let Entity = require('../entities/tag');
+let Aggregation = require('../aggregations/md2tag');
+let Projector = require('../components/projector');
 let Render = require('../helpers/render');
 let router = require('express').Router();
 
-router.get('/.:ext(json|csv|html)', (req, res) => {
+router.get('/.:ext(json|csv)', (req, res) => {
 	console.log(`index able!! ${req.params.ext}`);
 	Render[req.params.ext](res, Entity.all());
 });
 
-router.get('/:id([\\d]+)', (req, res) => {
-	console.log(`show able!! ${req.params.id}`);
-	Render.json(res, Entity.get(req.params.id));
+router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
+	console.log('show able!!', req.params.id, req.params.ext);
+	let id = Number(req.params.id);
+	let e = Entity.get(id);
+	if (e === null) {
+		Render.notFound(res);
+	} else {
+		let accept = {id:'id', title:'title'};
+		e.mds = Projector.select(Aggregation.findMDsByTagId(id), accept);
+		Render[req.params.ext](res, e);
+	}
 });
 
 router.post('/', (req, res) => {

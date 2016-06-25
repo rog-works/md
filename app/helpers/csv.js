@@ -2,14 +2,17 @@
 
 let CSV = {
 	stringify: (body) => {
+		return CSV._parse(body, '\n');
+	},
+	_parse: (body, delemiter) => {
 		if (Array.isArray(body)) {
 			return body.map((self) => {
-				return CSV.stringify(self);
-			}).join('\n');
+				return CSV._parse(self, ',');
+			}).join(delemiter);
 		} else if (typeof body === 'object') {
 			let values = [];
 			for (let key in body) {
-				values.push(CSV.stringify(body[key]));
+				values.push(CSV._parse(body[key], ','));
 			}
 			return values.join(',');
 		} else {
