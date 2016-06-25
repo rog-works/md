@@ -1,0 +1,24 @@
+{
+	"name": "md-app",
+	"version": "0.0.1",
+	"description": "md api",
+	"dependencies": {
+		"express": "^4.12.4",
+		"request": "2.72.0",
+		"cheerio": "0.20.0",
+		"promise": "*",
+		"body-parser": "1.15.1"
+	},
+	"engines": {
+		"node": "6.2.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rog-works/md"
+	},
+	"keywords": [
+		"node",
+		"express"
+	],
+	"license": "MIT"
+}
