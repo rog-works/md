@@ -1,5 +1,9 @@
 'use strict';
 
+let keys = () => {
+	return ['id', 'title', 'md'];
+};
+
 // get all
 let all = () => {
 	return posts;
@@ -13,7 +17,7 @@ let findByIds = (ids) => {
 	return filter(ids, 'id');
 };
 
-// at once
+// filter
 let filter = (ids, key) => {
 	return posts.filter((self) => {
 		return ids.indexOf(self[key]) !== -1;
@@ -78,6 +82,7 @@ $ echo hoge | grep "hoge" > /dev/null \n\
 	];
 
 module.exports = {
+	keys: keys,
 	all: all,
 	get: get,
 	findByIds: findByIds,

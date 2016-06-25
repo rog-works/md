@@ -1,5 +1,9 @@
 'use strict';
 
+let keys = () => {
+	return ['id', 'name'];
+};
+
 // get all
 let all = () => {
 	return tags;
@@ -46,6 +50,7 @@ let tags = [
 ];
 
 module.exports = {
+	keys: keys,
 	all: all,
 	get: get,
 	findByIds:findByIds,

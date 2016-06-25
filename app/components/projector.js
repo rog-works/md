@@ -1,7 +1,7 @@
 'use strict';
 
 let Projector = {
-	select: (body, keys) => {console.log(body);
+	select: (body, keys) => {
 		if (Array.isArray(body)) {
 			return body.map((self) => {
 					return Projector._select(self, keys);
@@ -13,28 +13,17 @@ let Projector = {
 		}
 	},
 	_select: (obj, keys) => {
-		if (Array.isArray(keys)) {
-			return Projector.values(obj, keys);
-		} else if (typeof keys === 'object') {
-			return Projector.as(obj, keys);
-		} else {
-			return (keys in obj) ? obj[keys] : null;
-		}
-	},
-	as: (obj, alias) => {
 		let ret = {};
-		for (let key in alias) {
-			if (key in obj) {
-				ret[alias[key]] = obj[key];
-			}
-		}
-		return ret;
-	},
-	values: (obj, keys) => {
-		let ret = [];
 		for (let key of keys) {
-			if (key in obj) {
-				ret.push(obj[key]);
+			if (key.indexOf('.') === -1) {
+				if (key in obj) {
+					ret[key] = obj[key];
+				}
+			} else {
+				let [to, from] = key.split('.');
+				if (to in obj) {
+					ret[to] = Projector.select(obj[to], from.split(','));
+				}
 			}
 		}
 		return ret;
