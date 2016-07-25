@@ -8,7 +8,10 @@ ADD opt/ /opt/
 WORKDIR /opt
 
 # Install
-RUN npm install --production \
+RUN apt-get update \
+ && apt-get install -y vim --no-install-recommends \
+ && rm -rf /var/lib/apt/lists/* \
+ && npm install --production \
  && npm cache clean
 
 CMD node ${MAIN_SCRIPT}
