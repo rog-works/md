@@ -7,34 +7,6 @@ $(() => {
 	
 	console.log('hello world :o');
 	
-	$.get('/dreams', (dreams) => {
-		dreams.forEach((dream) => {
-			$('<li></li>').text(dream).appendTo('ul#dreams');
-		});
-	});
-
-	$('form#dream').submit((event) => {
-		var that = $('form#dream'),
-			input = that.find('input');
-		event.preventDefault();
-		dream = input.val();
-		$.post('/dreams?' + $.param({dream: dream}), () => {
-			$('<li></li>').text(dream).appendTo('ul#dreams');
-			input.val('');
-			input.focus();
-		});
-	});
-
-	$('a').bind('click', (event) => {
-		event.preventDefault();
-		$.get('dreams/d', (dreams) => {
-			$('ul#dreams').innerHtml = '';
-			for(let i in dreams) {
-				$('<li></li>').text(dreams[i]).appebdTo('ul#dreams');
-			}
-		});
-	})
-
 	$('form#2word').submit((event) => {
 		event.preventDefault();
 		let that = $(event.toElement);
