@@ -1,29 +1,28 @@
-Welcome to the HyperDev BETA
-============================
+md
+===
 
-Click `"Show"` in the header to see your app is live. Updates to your code will instantly deploy and update live.
+Usage
+=====
 
-HyperDev is a developer playground that lets you code a real web-app without the slow setup and deployment steps. 
+* create compose.yml
+```
+$ vim compose.yml
+services:
+  container_name: md
+  image: localhost:49000/md:latest
+  volumes:
+    - /vagrant/md/app:/opt/app
+  ports:
+    - "18081:8080"
+    - "3306:3306"
+  environment:
+    MAIN_SCRIPT: /opt/app/server.js
+    PORT: 8080
+    MYSQL_USER: user
+    MYSQL_PASSWORD: password
+```
 
-
-Your Project
-------------
-
-On the back-end,
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env`
-
-On the front-end,
-- edit `client.js`, `style.css` and `index.html`
-- drag in `assets`, like images or music, to add them to your project
-
-
-Made by Fog Creek
------------------
-
-\ ゜o゜)ノ
-
-Task
-----
-- Hoge
+* run the md container
+```
+$ docker-compose up -d
+```

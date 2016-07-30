@@ -8,7 +8,7 @@
 		"cheerio": "0.20.0",
 		"promise": "*",
 		"body-parser": "1.15.1",
-		"sequelize": "*"
+		"redis": "*"
 	},
 	"engines": {
 		"node": "6.2.2"
