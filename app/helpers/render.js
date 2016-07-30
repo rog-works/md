@@ -1,6 +1,6 @@
 'use strict';
 
-let CSV = require('./CSV');
+let CSV = require('./csv');
 
 let Render = {
 	_sendProxy: (res, body) => {

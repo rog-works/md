@@ -8,7 +8,6 @@ app.use(Express.static('/opt/app/public'));
 app.use(BodyParser.urlencoded({ extended: false }));
 
 app.use('/', require('./controllers/index'));
-app.use('/dreams', require('./controllers/dream'));
 app.use('/ww', require('./controllers/ww'));
 app.use('/md', require('./controllers/md'));
 app.use('/tag', require('./controllers/tag'));
