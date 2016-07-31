@@ -15,6 +15,10 @@ class Model {
 		};
 	}
 
+	factory (table) {
+		return new Model(table);
+	}
+
 	on (tag, handler) {
 		this.handlers[tag].unshift(handler);
 		return this;

@@ -1,7 +1,7 @@
 'use strict';
 
 const Entity = require('../entities/md');
-const Aggregation = require('../aggregations/md2tag');
+const Aggregation = require('../aggregations/mdservice');
 const Projector = require('../components/projector');
 const Render = require('../helpers/render');
 const router = require('express').Router();
@@ -10,7 +10,7 @@ router.get('/.:ext(json|csv)', (req, res) => {
 	console.log('index able!!', req.params.ext, req.query.filter);
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
-	(new Entity()).all((rows) => {
+	Entity.all((rows) => {
 		let entities = Projector.select(rows, accept);
 		Render[req.params.ext](res, entities);
 	});
@@ -21,11 +21,11 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 	let id = Number(req.params.id);
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
-	(new Entity()).get(id, (row) => {
+	Entity.get(id, (row) => {
 		if (row === null) {
 			Render.notFound(res);
 		} else {
-			(new Aggregation()).findTagsByMDId(row.id, (tags) => {
+			Aggregation.findTags(row.id, (tags) => {
 				row.tags = tags;
 				Render[req.params.ext](res, Projector.select(row, accept));
 			});
@@ -35,14 +35,14 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 
 router.post('/', (req, res) => {
 	console.log(`create able!! ${req.body.md}`);
-	(new Entity()).create(req.body.md, (message) => {
+	Entity.create(req.body.md, (message) => {
 		Render.json(res, message);
 	});
 });
 
 router.delete('/:id([\\d]+)', (req, res) => {
 	console.log('destroy able!!', req.params.id);
-	(new Entity()).destroy(req.params.id, (message) => {
+	Aggregation.invalidate(req.params.id, (message) => {
 		Render.json(res, message);
 	});
 });

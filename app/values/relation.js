@@ -1,45 +1,42 @@
 'use strict';
 
 const Model = require('../models/model');
+const TABLE_NAME = 'relation';
 
-class Relation extends Model {
-	constructor () {
-		super('relation');
-	}
-
+class Relation {
 	static keys () {
-		return [ 'mdId', 'tagId'];
+		return [ 'id', 'mdId', 'tagId'];
 	}
 
-	get (id, callback) {
-		this.on('select', callback).at(id);
+	static get (id, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).at(id);
 	}
 
 	// get all
-	all (callback) {
-		this.on('select', callback).find();
+	static all (callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find();
 	}
 
-	findByIds (ids, callback) {
-		this.on('select', callback).find((self) => { return ids.indexOf(self.id); });
+	static findByIds (ids, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(self.id); });
 	}
 
-	findByMDId (mdId) {
-		this.on('select', callback).find((self) => { return mdId == self.mdId; });
+	static findByMDId (mdId) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return mdId == self.mdId; });
 	}
 
-	findByTagId (tagId) {
-		this.on('select', callback).find((self) => { return tagId == self.tagId; });
+	static findByTagId (tagId) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return tagId == self.tagId; });
 	}
 
 	// create from mdId and tagId
-	create (mdId, tagId, callback) {
-		this.on('insert', callback).insert({mdId: mdId, tagId: tagId});
+	static create (mdId, tagId, callback) {
+		Model.factory(TABLE_NAME).on('insert', callback).insert({ mdId: mdId, tagId: tagId });
 	}
 
 	// destroy by id
-	destroy (id, callback) {
-		this.on('delete', callback).delete(id);
+	static destroy (id, callback) {
+		Model.factory(TABLE_NAME).on('delete', callback).delete(id);
 	}
 }
 
