@@ -1,6 +1,6 @@
 'use strict';
 
-const redis = require('redis');
+const client = require('redis').createClient('redis://editor-db:6379');
 
 class Model {
 	constructor (table) {
@@ -11,47 +11,55 @@ class Model {
 			'update': [this._onUpdate],
 			'delete': [this._onDelete],
 			'count': [this._onCount],
-			'error': [this.onError]
+			'error': [this._onError]
 		};
 	}
 
-	static factory(table) {
-		return new Model(table);
-	}
-
 	on (tag, handler) {
-		this.handlers[tag].unshit(handler);
+		this.handlers[tag].unshift(handler);
 		return this;
 	}
 
 	at (id) {
-		redis.hmget(this._toKey(id), (err, row) => {
+		client.hgetall(this._toKey(id), (err, row) => {
 			this._listen('select', err, row);
 		});
 	}
 
 	find (filter = null) {
-		redis.hvals(this._toKey('*'), (err, rows) => {
-			let filtered = rows;
-			if (filter !== null) {
-				filtered = rows.filter((self) => {
-					return filter(self);
+		client.keys(this._toKey('*'), (err, keys) => {
+			let rows = [];
+			let get = (key) => {
+				client.hgetall(key, (err, row) => {
+					if (err) {
+						this._listen('error', err);
+						return;
+					}
+					if (filter === null || filter(row)) {
+						rows.push = row;
+					}
+					// XXX
+					if (keys.length > 0) {
+						get(keys.shift());
+					} else {
+						this._listen('select', err, rows);
+					}
 				});
-			}
-			this._listen('select', err, filtered);
+			};
+			get(keys.shift());
 		});
 	}
 
 	count () {
-		redis.hlen(this._toKey('*'), (err, length) => {
-			this._listen('count', err, length);
+		client.keys(this._toKey('*'), (err, keys) => {
+			this._listen('count', err, keys.length);
 		});
 	}
 
 	insert (row) {
-		redis.incr(this._getIncIdKey(), (err, id) => {
+		client.incr(this._getIncIdKey(), (err, id) => {
 			row.id = id;
-			redis.hmset(this._toKey(id), row, (err, message) => {
+			client.hmset(this._toKey(id), row, (err, message) => {
 				this._listen('insert', err, message);
 			});
 		});
@@ -59,9 +67,9 @@ class Model {
 
 	update (id, row) {
 		let key = this._toKey(id);
-		redis.exists(key, (err, exists) => {
+		client.exists(key, (err, exists) => {
 			if (exists) {
-				redis.hmset(key, row, (err, message) => {
+				client.hmset(key, row, (err, message) => {
 					this._listen('update', err, message);
 				});
 			} else {
@@ -71,7 +79,7 @@ class Model {
 	}
 
 	delete (id, row) {
-		redis.del(this._toKey(id), (err, message) => {
+		client.del(this._toKey(id), (err, message) => {
 			this._listen('delete', err, message);
 		});
 	}

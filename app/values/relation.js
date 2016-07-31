@@ -7,6 +7,10 @@ class Relation extends Model {
 		super('relation');
 	}
 
+	static keys () {
+		return [ 'mdId', 'tagId'];
+	}
+
 	get (id, callback) {
 		this.on('select', callback).at(id);
 	}
