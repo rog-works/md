@@ -48,7 +48,7 @@ $(() => {
 		let that = $('form#md-show');
 		let out = $('section.md');
 		out.html('<img src="' + params.waitImgUrl + '" />');
-		$.get('/md/' + id, (res) => {
+		$.get('/md/' + id + '.json', (res) => {
 			//onMDUpdate(out, res.md);
 			let outTags = $('section.md-tags');
 			let tagsLi = res.tags.map((self) => {
@@ -73,10 +73,12 @@ $(() => {
 		event.preventDefault();
 		let that = $(event.toElement);
 		let input = that.find('textarea');
-		let md = input.val();
 		let out = $('section.md');
+		let md = input.val();
+		let fd = new FormData();
+		fd.append('md', fd);
 		out.html('<img src="' + params.waitImgUrl + '" />');
-		$.post('/md', {md:md}, (res) => {
+		$.post('/md', fd, (res) => {
 			onMDUpdate(out, res.md);
 			onMDReload();
 		});
