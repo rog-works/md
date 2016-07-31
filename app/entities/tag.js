@@ -1,59 +1,38 @@
 'use strict';
 
-let keys = () => {
-	return ['id', 'name'];
-};
+const Model = require('../models/model');
 
-// get all
-let all = () => {
-	return tags;
-};
+class Tag extends Model {
+	constructor () {
+		super('tag');
+	}
 
-let get = (id) => {
-	return findByIds([id]).pop() || null;
-};
+	static keys () {
+		return ['id', 'name'];
+	}
 
-let findByIds = (ids) => {
-	return filter(ids, 'id');
-};
+	get (id, callback) {
+		this.on('select', callback).at(id);
+	}
 
-// at once
-let filter = (ids, key) => {
-	return tags.filter((self) => {
-		return ids.indexOf(self[key]) !== -1;
-	});
-};
+	// get all
+	all (callback) {
+		this.on('select', callback).find();
+	}
 
-// create from tag
-let create = (tag) => {
-	let e = {
-		id: ++lastId,
-		name: tag
-	};
-	tags.push(e);
-	return e;
-};
+	findByIds (ids, callback) {
+		this.on('select', callback).find((self) => { return ids.indexOf(self.id); });
+	}
 
-// destroy by id
-let destroy = (id) => {
-	let len = tags.length;
-	tags = tags.filter((self) => {
-		return self.id !== id;
-	});
-	return len - tags.length;
-};
+	// create from md
+	create (md, callback) {
+		this.on('insert', callback).insert({name: name});
+	}
 
-let lastId = 2;
-let tags = [
-	{id: 1, name: 'IT'},
-	{id: 2, name: 'AWS'}
-];
+	// destroy by id
+	destroy (id, callback) {
+		this.on('delete', callback).delete(id);
+	}
+}
 
-module.exports = {
-	keys: keys,
-	all: all,
-	get: get,
-	findByIds:findByIds,
-	create: create,
-	destroy: destroy
-};
+module.exports = Tag;

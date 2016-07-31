@@ -1,79 +1,42 @@
 'use strict';
 
-// get all
-let all = () => {
-  return rels;
-};
+const Model = require('../models/model');
 
-// at once
-let filter = (ids, key) => {
-  return rels.filter((self) => {
-    return ids.indexOf(self[key]) !== -1;
-  });
-};
+class Relation extends Model {
+	constructor () {
+		super('relation');
+	}
 
-let findByIds = (ids) => {
-  return filter(ids, 'id');
-};
+	get (id, callback) {
+		this.on('select', callback).at(id);
+	}
 
-let get = (id) => {
-  return findByIds([id]).pop() || null;
-};
+	// get all
+	all (callback) {
+		this.on('select', callback).find();
+	}
 
-let findByMDId = (md_id) => {
-  return filter([md_id], 'md_id');
-};
+	findByIds (ids, callback) {
+		this.on('select', callback).find((self) => { return ids.indexOf(self.id); });
+	}
 
-let findByTagId = (tagId) => {
-  return filter([tagId], 'tag_id');
-};
+	findByMDId (mdId) {
+		this.on('select', callback).find((self) => { return mdId == self.mdId; });
+	}
 
-// create from relation pair id
-let create = (tag_id, md_id) => {
-  let v = {
-    id: ++lastId,
-    tag_id: tag_id,
-    md_id: md_id
-  };
-  rels.push(v);
-  return v;
-};
+	findByTagId (tagId) {
+		this.on('select', callback).find((self) => { return tagId == self.tagId; });
+	}
 
- let batchCreate = (pairs) => {
-   return pairs.map((self) => {
-     return create(self.tag_id, self.md_id);
-   });
- };
+	// create from mdId and tagId
+	create (mdId, tagId, callback) {
+		this.on('insert', callback).insert({mdId: mdId, tagId: tagId});
+	}
 
-// destroy by ids
-let batchDestroy = (ids) => {
-  let len = rels.length;
-  rels = rels.filter((self) => {
-    return ids.indexOf(self.id) === -1;
-  });
-  return len - rels.length;
-};
+	// destroy by id
+	destroy (id, callback) {
+		this.on('delete', callback).delete(id);
+	}
+}
 
-// destroy by id
-let destroy = (id) => {
-  return batchDestroy([id]);
-};
-
-let lastId = 2;
-let rels = [
-  {id: 1, tag_id: 1, md_id: 1},
-  {id: 2, tag_id: 1, md_id: 2},
-  {id: 3, tag_id: 2, md_id: 1}
-  ];
-
-module.exports = {
-    all: all,
-    get: get,
-    findByIds: findByIds,
-    findByMDId: findByMDId,
-    findByTagId: findByTagId,
-    create: create,
-    batchCreate: batchCreate,
-    destroy: destroy,
-    batchDestroy: batchDestroy
-  };
+module.exports = Relation;

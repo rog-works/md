@@ -1,26 +1,30 @@
 'use strict';
 
-let MD = require('../entities/md');
-let Tag = require('../entities/tag');
-let Relation = require('../values/relation');
+const MD = require('../entities/md');
+const Tag = require('../entities/tag');
+const Relation = require('../values/relation');
 
-let findTagsByMDId = (md_id) => {
-  return Tag.findByIds(
-    Relation.findByMDId(md_id).map((self) => {
-      return self.tag_id;
-    })
-  );
-};
+class MD2Tag {
+	constructor () {
+	}
 
-let findMDsByTagId = (tag_id) => {
-  return MD.findByIds(
-    Relation.findByTagId(tag_id).map((self) => {
-      return self.md_id;
-    })
-  );
-};
+	findTagsByMDId (mdId, callback) {
+		(new Relation()).findByMDId(mdId, (rels) => {
+			let tagIds = rels.map((self) => {
+				return self.tagId;
+			});
+			(new Tag()).findByIds(tagIds, callback);
+		});
+	}
 
-module.exports = {
-  findTagsByMDId: findTagsByMDId,
-  findMDsByTagId: findMDsByTagId
-};
+	findMDsByTagId (tagId, callback) {
+		(new Relation()).findByTagId(tagId, (rels) => {
+			let mdIds = rels.map((self) => {
+				return self.mdId;
+			});
+			(new MD()).findByIds(mdIds, callback);
+		});
+	}
+}
+
+module.exports = MD2Tag;
