@@ -1,59 +1,35 @@
 'use strict';
 
-let keys = () => {
-	return ['id', 'name'];
-};
+const Model = require('../models/model');
+const TABLE_NAME = 'tag';
 
-// get all
-let all = () => {
-	return tags;
-};
+class Tag {
+	static keys () {
+		return ['id', 'name'];
+	}
 
-let get = (id) => {
-	return findByIds([id]).pop() || null;
-};
+	static get (id, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).at(id);
+	}
 
-let findByIds = (ids) => {
-	return filter(ids, 'id');
-};
+	// get all
+	static all (callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find();
+	}
 
-// at once
-let filter = (ids, key) => {
-	return tags.filter((self) => {
-		return ids.indexOf(self[key]) !== -1;
-	});
-};
+	static findByIds (ids, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
+	}
 
-// create from tag
-let create = (tag) => {
-	let e = {
-		id: ++lastId,
-		name: tag
-	};
-	tags.push(e);
-	return e;
-};
+	// create from name
+	static create (name, callback) {
+		Model.factory(TABLE_NAME).on('insert', callback).insert({ name: name });
+	}
 
-// destroy by id
-let destroy = (id) => {
-	let len = tags.length;
-	tags = tags.filter((self) => {
-		return self.id !== id;
-	});
-	return len - tags.length;
-};
+	// destroy by id
+	static destroy (id, callback) {
+		Model.factory(TABLE_NAME).on('delete', callback).delete(id);
+	}
+}
 
-let lastId = 2;
-let tags = [
-	{id: 1, name: 'IT'},
-	{id: 2, name: 'AWS'}
-];
-
-module.exports = {
-	keys: keys,
-	all: all,
-	get: get,
-	findByIds:findByIds,
-	create: create,
-	destroy: destroy
-};
+module.exports = Tag;
