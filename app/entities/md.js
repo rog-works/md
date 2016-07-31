@@ -18,7 +18,7 @@ class MD {
 	}
 
 	static findByIds (ids, callback) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(self.id); });
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
 	}
 
 	// create from md

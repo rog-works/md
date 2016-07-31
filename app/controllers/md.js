@@ -11,8 +11,7 @@ router.get('/.:ext(json|csv)', (req, res) => {
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
 	Entity.all((rows) => {
-		let entities = Projector.select(rows, accept);
-		Render[req.params.ext](res, entities);
+		Render[req.params.ext](res, Projector.select(rows, accept));
 	});
 });
 
@@ -21,14 +20,11 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 	let id = Number(req.params.id);
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
-	Entity.get(id, (row) => {
+	Aggregation.get(id, (row) => {
 		if (row === null) {
 			Render.notFound(res);
 		} else {
-			Aggregation.findTags(row.id, (tags) => {
-				row.tags = tags;
-				Render[req.params.ext](res, Projector.select(row, accept));
-			});
+			Render[req.params.ext](res, Projector.select(row, accept));
 		}
 	});
 });
@@ -42,7 +38,8 @@ router.post('/', (req, res) => {
 
 router.delete('/:id([\\d]+)', (req, res) => {
 	console.log('destroy able!!', req.params.id);
-	Aggregation.invalidate(req.params.id, (message) => {
+	let id = Number(req.params.id);
+	Aggregation.invalidate(id, (message) => {
 		Render.json(res, message);
 	});
 });

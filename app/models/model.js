@@ -15,7 +15,7 @@ class Model {
 		};
 	}
 
-	factory (table) {
+	static factory (table) {
 		return new Model(table);
 	}
 
@@ -40,7 +40,7 @@ class Model {
 						return;
 					}
 					if (filter === null || filter(row)) {
-						rows.push = row;
+						rows.push(row);
 					}
 					// XXX
 					if (keys.length > 0) {
@@ -50,7 +50,11 @@ class Model {
 					}
 				});
 			};
-			get(keys.shift());
+			if (keys.length > 0) {
+				get(keys.shift());
+			} else {
+				this._listen('select', err, []);
+			}
 		});
 	}
 
@@ -62,7 +66,7 @@ class Model {
 
 	insert (row) {
 		client.incr(this._getIncIdKey(), (err, id) => {
-			row.id = id;
+			row.id = Number(id);
 			client.hmset(this._toKey(id), row, (err, message) => {
 				this._listen('insert', err, message);
 			});

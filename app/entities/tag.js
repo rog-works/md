@@ -18,11 +18,11 @@ class Tag {
 	}
 
 	static findByIds (ids, callback) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(self.id); });
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
 	}
 
-	// create from md
-	static create (md, callback) {
+	// create from name
+	static create (name, callback) {
 		Model.factory(TABLE_NAME).on('insert', callback).insert({ name: name });
 	}
 

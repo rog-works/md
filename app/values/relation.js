@@ -18,15 +18,15 @@ class Relation {
 	}
 
 	static findByIds (ids, callback) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(self.id); });
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
 	}
 
-	static findByMDId (mdId) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return mdId == self.mdId; });
+	static findByMDId (mdId, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return mdId === Number(self.mdId); });
 	}
 
-	static findByTagId (tagId) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return tagId == self.tagId; });
+	static findByTagId (tagId, callback) {
+		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return tagId === Number(self.tagId); });
 	}
 
 	// create from mdId and tagId

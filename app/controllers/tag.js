@@ -11,8 +11,7 @@ router.get('/.:ext(json|csv)', (req, res) => {
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
 	Entity.all((rows) => {
-		let entities = Projector.select(rows, accept);
-		Render[req.params.ext](res, entities);
+		Render[req.params.ext](res, Projector.select(rows, accept));
 	});
 });
 
@@ -21,14 +20,11 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 	let id = Number(req.params.id);
 	let filter = req.query.filter || Entity.keys().join('|');
 	let accept = filter.split('|');
-	Entity.get(id, (row) => {
+	Aggregation.getTag(id, (row) => {
 		if (row === null) {
 			Render.notFound(res);
 		} else {
-			Aggregation.findMDs(id, (mds) => {
-				row.mds = mds;
-				Render[req.params.ext](res, Projector.select(row, accept));
-			});
+			Render[req.params.ext](res, Projector.select(row, accept));
 		}
 	});
 });
@@ -42,14 +38,17 @@ router.post('/', (req, res) => {
 
 router.put('/:id([\\d]+)/:mdId([\\d])', (req, res) => {
 	console.log('update able!!', req.params.id, req.params.mdId);
-	Aggregation.tagged(req.params.id, req.params.mdId, (message) => {
+	let id = Number(req.params.id);
+	let mdId = Number(req.params.mdId);
+	Aggregation.tagged(id, mdId, (message) => {
 		Render.json(res, message);
 	});
 });
 
 router.delete('/:id([\\d]+)', (req, res) => {
 	console.log('destroy able!!', req.params.id);
-	Aggregation.untagged(req.params.id, (message) => {
+	let id = Number(req.params.id);
+	Aggregation.untagged(id, (message) => {
 		Render.json(res, message);
 	});
 });
