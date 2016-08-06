@@ -78,6 +78,15 @@ $(() => {
 			});
 		}
 
+		search (tagId) {
+			MD.search(tagId, (mds) => {
+				this.mds.removeAll();
+				for (const md of mds) {
+					this.mds.push(new MD(md));
+				}
+			});
+		}
+
 		append () {
 			MD.create(this.maker.body(), (md) => {
 				this.mds.push(new MD(md));
@@ -134,6 +143,15 @@ $(() => {
 			);
 		}
 
+		static search (tagId, callback) {
+			let filter = ['id', 'title'].join('|');
+			MD.send(
+				`/search/${tagId}.json?filter=${filter}`,
+				{type: 'GET'},
+				callback
+			);
+		}
+
 		static create (body, callback) {
 			MD.send(
 				'/',
@@ -171,7 +189,7 @@ $(() => {
 					this.tags.removeAll();
 					// FIXME
 					for (const tag of (md.tags || [])) {
-						this.tags.push(tag);
+						this.tags.push({id: tag.id, name: tag.name, search: () => { LIB.app.search(this.id); }});
 					}
 				}
 			);
@@ -186,6 +204,7 @@ $(() => {
 			console: Console.init(),
 			app: App.init()
 		});
+		console.log('launched!!');
 	} catch (error) {
 		console.error(error.message, error.stack);
 	}

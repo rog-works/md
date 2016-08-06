@@ -14,11 +14,14 @@
 		<main id="md-main">
 			<a id="md-toggle-button" data-bind="click: toggle">+</a>
 			<div id="md-index" data-bind="css: { hide: mode() !== 'index' }">
-				<h3>Markdowns</h3>
+				<h3>Posts</h3>
 				<div id="md-entry" data-bind="foreach: mds">
 					<div class="md-item" data-bind="click: $data.show">
 						<div data-bind="text: $data.title"></div>
 						<div data-bind="html: $data.body, css: { hide: $data.closed }"></div>
+						<div data-bind="foreach: $data.tags, css: { hide: $data.closed }">
+							<a data-bind="text: $data.name, click: $data.search"></a>
+						</div>
 					</div>
 				</div>
 			</div>

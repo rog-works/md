@@ -15,6 +15,16 @@ router.get('/.:ext(json|csv)', (req, res) => {
 	});
 });
 
+router.get('/search/:tagId([\\d]+).:ext(json|csv)', (req, res) => {
+	console.log('search able!!', req.params.tagId, req.params.ext, req.query.filter);
+	let tagId = Number(req.params.tagId);
+	let filter = req.query.filter || Entity.keys().join('|');
+	let accept = filter.split('|');
+	Aggregation.findMDs(tagId, (rows) => {
+		Render[req.params.ext](res, Projector.select(rows, accept));
+	});
+});
+
 router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 	console.log('show able!!', req.params.id, req.params.ext, req.query.filter);
 	let id = Number(req.params.id);
