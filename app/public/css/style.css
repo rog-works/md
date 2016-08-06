@@ -1,0 +1,83 @@
+/* common styles */
+.hide {
+	display: none;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background-color: white;
+}
+
+/* button */
+#md-toggle-button {
+	width: 32px;
+	height: 32px;
+	margin: 10px;
+	position: fixed;
+	float: right;
+	top: 0;
+	right: 0;
+	color: white;
+	background-color: #888;
+	text-align: center;
+	z-index: 1000;
+	border-radius: 5px;
+}
+
+/* main styles */
+#md-main {
+	width: 100%;
+	height: 480px;
+	background-color: #eee;
+	border: transparent;
+	border-radius: 5px;
+}
+
+
+/* index styles */
+#md-index {
+	width: 100%;
+	height: 100%;
+}
+
+#md-index > h3 {
+	margin: 0;
+	padding: 0 0 0 5px;
+	border-top: none;
+	border-right: none;
+	border-bottom: solid 2px #ccc;
+	border-left: solid 5px #ccc;
+}
+
+.md-item:nth-child(even) {
+	background-color: white;
+}
+
+/* create styles */
+#md-create {
+	width: 100%;
+	height: 100%;
+}
+
+#md-create-tool {
+	width: 100%;
+	height: 32px;
+	background-color: #ccc;
+}
+
+#md-create-send {
+	color: white;
+	background-color: #aaa;
+}
+
+#md-create-wrap {
+	width: 100%;
+	height: 448px;
+	overflow: scroll;
+}
+
+#md-create-body {
+	width: 100%;
+	height: 100%;
+}

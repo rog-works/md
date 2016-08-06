@@ -135,7 +135,7 @@ class Model {
 			this._listen('error', false, args);
 		}
 		for (let handler of this.handlers[tag]) {
-			if (!handler.apply(this, args)) {
+			if (!handler(...args)) {
 				break;
 			}
 		}
