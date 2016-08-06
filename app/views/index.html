@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Welcome to HyperDev!</title>
+    <title>MD Manage Tool</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,43 +10,29 @@
     <link rel="stylesheet" href="/markdown.css">
   </head>
   <body>
-    <main>
-      <p class="bold">Oh hi,</p>
-      <!-- 2word -->
-      <section class="2words">
-      </section>
-      <form id="2word">
-        <input id="word" type="text" required>
-        <button type="submit">2word</button>
-      </form>
-      <!-- md -->
-      <ul id="md-index">
-      </ul>
-      <form id="md-show">
-        <input id="id" type="number" required>
-        <button type="submit">md-show</button>
-      </form>
-      <form id="md-create">
-        <textarea id="md" required></textarea>
-        <button type="submit">md-create</button>
-      </form>
-      <section class="md">
-      </section>
-      <section class="md-tags">
-      </section>
-      <pre>
-        <code class="language-bash line-numbers">
-          $ cat /var/http/access.log | grep 'hoge' > /dev/null
-          $ sudo find / -type f -name "*.coffee" && echo OK
-        </code>
-      </pre>
+    <main id=" md-main">
+      <div id="md-toggle-button" data-bind="click: toggle"></div>
+      <div id="md-index" data-bind="foreach: mds, css: { hide: mode !== 'index' }">
+          <div class="md-item" data-bind="click: $data.show">
+              <pre data-bind="css: { hide: $data.closed }"><code class="line-numbers" data-bind="css: { $data.language() }, html: $data.body"></code></pre>
+          </div>
+      </div>
+      <div id="md-create" data-bind="css: { hide: mode !== 'create' }">
+          <a id="md-create-send" data-bind="click: append">create</a>
+          <textarea id="md-create-body" data-bind="value: maker.body"></textarea>
+      </div>
     </main>
-    <!-- Your web-app is https, so your scripts need to be too -->
+      <div id="debug" data-bind="foreach: lines">
+        <div data-bind="click: toggle, css: { expand: $data.expanded }">
+            <div data-bind="text: $data.body"></div>
+        </div>
+      </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"
             integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
             crossorigin="anonymous"></script>
-    <script src="/client.js" type="text/javascript" charset="utf8"></script>
     <script src="/marked.js" type="text/javascript" charset="utf8"></script>
     <script src="prism.js"></script>
+    <script src="/client.js" type="text/javascript" charset="utf8"></script>
   </body>
 </html>

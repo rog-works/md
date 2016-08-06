@@ -1,100 +1,172 @@
 'use strict';
 
+let LIB = {};
 $(() => {
-	var params = {
-		waitImgUrl: 'https://dujrsrsgsd3nh.cloudfront.net/img/emoticons/waiting-1417756997.gif'
-	};
-	
-	console.log('hello world :o');
-	
-	$('form#2word').submit((event) => {
-		event.preventDefault();
-		let that = $(event.toElement);
-		let input = that.find('input');
-		let w = input.val();
-		let out = $('section.2words');
-		out.html('<img src="' + params.waitImgUrl + '" />');
-		$.get('/ww?' + $.param({word:w}), (res) => {
-			out.text(res);
-			input.val('');
-		});
+	LIB = $.extend({
+	    params: {
+	    	waitImgUrl: 'https://dujrsrsgsd3nh.cloudfront.net/img/emoticons/waiting-1417756997.gif'
+	    },
+	    debug: Debugger.init(),
+	    app: App.init()
 	});
 	
-	let onMDReload = () => {
-		$.get('/md/.json', (res) => {
-			let out = $('ul#md-index');
-			out.html('<img src="' + params.waitImgUrl + '" />');
-			let lis = [];
-			for (let i in res) {
-				let e = res[i];
-				let li = '<li><a href="/md/' + e.id + '">' + '[' + e.id + '] ' + e.title + '</a></li>'
-				lis += li;
-			}
-			out.html(lis);
-			out.find('li > a').on('click', (event) => {
-				event.preventDefault();
-				let that = $(event.toElement);
-				let id = that.attr('href').match(/[\d]+$/);
-				onMDShow(id);
+	class Debugger {
+	    constructor () {
+	        this.lines = ko.observableArray([]);
+	    }
+	    
+	    static bind (handler) {
+	        console.log = handler.put;
+	    }
+	    
+	    put (...args) {
+	        for (const arg of args) {
+	            this.lines.push(new DebugLine(arg));
+	        }
+	    }
+	    
+	    clear () {
+	        this.lines.removeAll();
+	    }
+	    
+	    static init (id = 'debug') {
+	        let self = new Debug();
+	        ko.applyBindings(self);
+	        Debug.bind(self);
+	        return self;
+	    }
+	}
+	
+	class DebugLine {
+	    constructor (data) {
+	        this.body = data.toString();
+	        this.expanded = ko.observable(true);
+	    }
+	    
+	    toggle () {
+	        this.expanded(this.expanded());
+	    }
+	}
+	
+	class App {
+	    constructor () {
+	        this.mode = ko.observable('index');
+	        this.mds = ko.observableArray([]);
+	        this.maker = ko.observable(new MD({
+	            id: -1,
+	            title: '',
+	            body: '',
+	            tags: []
+	        }));
+	        this.decorator = marked;
+	        // XXX
+	        this.decorator.setOptions({
+        		langPrefix: 'language-'
+	        });
+	    }
+	    
+	    static init (id = 'md-main') {
+	        let self = new App();
+	        ko.applyBindings(self, document.getElementById(id));
+	        self.load();
+	        return self;
+	    }
+	    
+	    load () {
+    		$.ajax({
+    		    url: 'localhost:18081/md/.json',
+    		    type: 'GET',
+    		    dataType: 'json',
+    		    success: (mds) => {
+        		    this.mds.removeAll();
+        			for (const md of mds) {
+        			    this.mds.push(new MD(md));
+        			}
+    		    },
+    		    error: (res, err) => {
+    		        this.maker.body(err);
+    		    }
+    		});
+	    }
+	    
+	    append () {
+			MD.create(this.maker.body(), (err, md) => {
+			    if (err === null) {
+			        this.mds.push(new MD(md));
+    		    	this.maker.body('');
+			    } else {
+			        this.maker.body(err);
+			    }
 			});
-		});
-	};
+	    }
+	    
+	    toggle () {
+	        const next = this.mode() === 'index' ? 'create' : 'index';
+	        this.mode(next);
+	    }
+	    
+	    // XXX
+	    decorate (body) {
+	        let elem = this.decorator(body);
+	        let blocks = $(elem).find('code');
+	        for (let block of blocks) {
+	            Prism.highlightElement(block);
+	        }
+	        return elem;
+	    }
+	}
 	
-	(function () {
-		onMDReload();
-	}());
-	
-	let onMDShow = (id) => {
-		let that = $('form#md-show');
-		let out = $('section.md');
-		out.html('<img src="' + params.waitImgUrl + '" />');
-		$.get('/md/' + id + '.json', (res) => {
-			//onMDUpdate(out, res.md);
-			let outTags = $('section.md-tags');
-			let tagsLi = res.tags.map((self) => {
-				return '<li><a href="#' + self.id + '">' + self.name + '</a></li>'
-			});
-			let tagsUl = '<ul>' + tagsLi.join('') + '</ul>';
-			outTags.html(tagsUl);
-			onMDUpdate(out, res.md);
-		});
-	};
-	
-	$('form#md-show').submit((event) => {
-		event.preventDefault();
-		let that = $(event.toElement);
-		let input = that.find('input');
-		let id = input.val();
-		onMDShow(id);
-		input.val('');
-	});
-	
-	$('form#md-create').submit((event) => {
-		event.preventDefault();
-		let that = $(event.toElement);
-		let input = that.find('textarea');
-		let out = $('section.md');
-		let md = input.val();
-		let fd = new FormData();
-		fd.append('md', fd);
-		out.html('<img src="' + params.waitImgUrl + '" />');
-		$.post('/md', fd, (res) => {
-			onMDUpdate(out, res.md);
-			onMDReload();
-		});
-	});
-	
-	marked.setOptions({
-		langPrefix: 'language-'
-	});
-	
-	let onMDUpdate = (e, md) => {
-		e.html(marked(md));
-		let blocks = e.find('pre > code');
-		blocks.parent('pre').addClass('line-numbers');
-		for (let i in blocks) {
-			Prism.highlightElement(blocks[i]);
-		}
-	};
-	
+	class MD {
+	    constructor (md) {
+	        this.id = md.id;
+	        this.title = ko.observable(md.title);
+	        this.body = ko.observable(md.body);
+	        this.tags = ko.observableArray(md.tags);
+	        this.closed = ko.observable(true);
+	    }
+	    
+    	show (id) {
+    	    if (this.body().length === 0) {
+    	        this._show();
+    	        this.closed(false);
+    	    } else {
+    	        this.closed(!this.closed());
+    	    }
+    	}
+    	
+    	_show () {
+    		this.body('<img src="' + LIB.params.waitImgUrl + '" />');
+    		$.ajax({
+    		    url: `:18081/md/${this.id}.json`,
+    		    success: (md) => {
+        	        this.id = md.id;
+        	        this.body(LIB.app.decorate(md.body));
+        	        this.tags.removeAll();
+        	        for (const tag of md.tags) {
+        	            this.tags.push(tag);
+        	        }
+        		},
+        		error: (res, err) => {
+        		    LIB.app.maker.body(err);
+        		}
+        	});
+    	}
+	    
+    	static create (body, callback) {
+    		let fd = new FormData();
+    		fd.append('body', body);
+    		$.ajax({
+    		    url: ':18081/md',
+    		    type: 'POST',
+    		    data: fd, 
+    		    dataType: 'json',
+    		    success: (res) => {
+    		        callback(null, res);
+        		},
+        		error: (res, err) => {
+        		    callback(err, null);
+        		}
+    		});
+    	}
+	}
 });

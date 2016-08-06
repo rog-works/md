@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MD Manage Tool</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sanitize.css/2.0.0/sanitize.min.css">
+  </head>
+  <body>
+    <div id="debug">
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" charset="utf8">
+        'use strict';
+        window.onload = () => {
+            console.log = (...args) => {
+                let self =$('#debug');
+                for (let i in args) {
+                    self.append('<pre>' + args[i] + '</pre>');
+                }
+            };
+            console.log('launched!');
+        };
+    </script>
+  </body>
+</html>

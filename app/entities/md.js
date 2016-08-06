@@ -5,7 +5,7 @@ const TABLE_NAME = 'md';
 
 class MD {
 	static keys () {
-		return ['id', 'title', 'md'];
+		return ['id', 'title', 'body'];
 	};
 
 	static get (id, callback) {
@@ -22,10 +22,10 @@ class MD {
 	}
 
 	// create from md
-	static create (md, callback) {
-		let pos = md.indexOf('\n');
-		let title = pos === -1 ? md : md.substr(0, pos);
-		Model.factory(TABLE_NAME).on('insert', callback).insert({ title: title, md: md });
+	static create (body, callback) {
+		let pos = body.indexOf('\n');
+		let title = pos === -1 ? body : body.substr(0, pos);
+		Model.factory(TABLE_NAME).on('insert', callback).insert({ title: title, body: body });
 	}
 
 	// destroy by id

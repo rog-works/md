@@ -30,8 +30,8 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-	console.log(`create able!! ${req.body.md}`);
-	Entity.create(req.body.md, (message) => {
+	console.log(`create able!! ${req.body.body}`);
+	Entity.create(req.body.body, (message) => {
 		Render.json(res, message);
 	});
 });
