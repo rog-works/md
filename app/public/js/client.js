@@ -52,7 +52,7 @@ $(() => {
 	
 	class App {
 		constructor () {
-			this.mode = ko.observable('index');
+			this.page = ko.observable('index');
 			this.mds = ko.observableArray([]);
 			this.maker = MD.empty();
 			this.decorator = marked;
@@ -96,8 +96,8 @@ $(() => {
 
 		// XXX
 		toggle () {
-			const next = this.mode() === 'index' ? 'create' : 'index';
-			this.mode(next);
+			const next = this.page() === 'index' ? 'create' : 'index';
+			this.page(next);
 		}
 
 		// XXX
@@ -131,6 +131,7 @@ $(() => {
 					console.error(err, res.status, res.statusText, res.responseText);
 				}
 			};
+			console.log('request. ' + url);
 			$.ajax($.extend(_data, data));
 		}
 

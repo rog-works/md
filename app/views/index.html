@@ -11,29 +11,31 @@
 		<link rel="stylesheet" href="/css/style.css">
 	</head>
 	<body>
-		<main id="md-main">
-			<a id="md-toggle-button" data-bind="click: toggle">+</a>
-			<div id="md-index" data-bind="css: { hide: mode() !== 'index' }">
-				<h3>Posts</h3>
-				<div id="md-entry" data-bind="foreach: mds">
-					<div class="md-item" data-bind="click: $data.show">
-						<div data-bind="text: $data.title"></div>
-						<div data-bind="html: $data.body, css: { hide: $data.closed }"></div>
-						<div data-bind="foreach: $data.tags, css: { hide: $data.closed }">
-							<a data-bind="text: $data.name, click: $data.search"></a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="md-create" data-bind="css: { hide: mode() !== 'create' }">
-				<div id="md-create-tool">
-					<a id="md-create-send" data-bind="click: append">save</a>
-				</div>
-				<div id=md-create-wrap>
-					<textarea id="md-create-body" data-bind="value: maker.body"></textarea>
-				</div>
-			</div>
-		</main>
+		<div id="md-main">
+			<!--<div id="md-page-index" data-bind="css: { hide: page() !== 'index' }">-->
+			<!--	<h3>Posts</h3>-->
+			<!--	<div id="md-entry" data-bind="foreach: mds">-->
+			<!--		<div class="md-item" data-bind="click: $data.show">-->
+			<!--			<div data-bind="text: $data.title"></div>-->
+			<!--			<div data-bind="html: $data.body, css: { hide: $data.closed }"></div>-->
+			<!--			<div data-bind="foreach: $data.tags, css: { hide: $data.closed }">-->
+			<!--				<a data-bind="text: $data.name, click: $data.search"></a>-->
+			<!--			</div>-->
+			<!--		</div>-->
+			<!--	</div>-->
+			<!--</div>-->
+			<!--<div id="md-page-create" data-bind="css: { hide: page() !== 'create' }">-->
+			<!--	<div id="md-create-tool">-->
+			<!--		<div id="md-create-send" data-bind="click: append">save</div>-->
+			<!--	</div>-->
+			<!--	<div id=md-create-wrap>-->
+			<!--		<textarea id="md-create-body" data-bind="value: maker.body"></textarea>-->
+			<!--	</div>-->
+			<!--</div>-->
+		 <!--   <div id="md-tab-container">-->
+			<!--    <div id="md-toggle-button" data-bind="click: toggle">+</div>-->
+			<!--</div>-->
+		</div>
 		<div id="console" data-bind="foreach: lines">
 			<div data-bind="click: $data.expand, css: { expand: $data.expanded }">
 				<div data-bind="text: $data.body"></div>
