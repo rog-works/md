@@ -28,6 +28,7 @@ class Model {
 		client.hgetall(this._toKey(id), (err, row) => {
 			this._listen('select', err, row);
 		});
+		return this;
 	}
 
 	find (filter = null) {
@@ -56,21 +57,24 @@ class Model {
 				this._listen('select', err, []);
 			}
 		});
+		return this;
 	}
 
 	count () {
 		client.keys(this._toKey('*'), (err, keys) => {
 			this._listen('count', err, keys.length);
 		});
+		return this;
 	}
 
 	insert (row) {
 		client.incr(this._getIncIdKey(), (err, id) => {
 			row.id = Number(id);
 			client.hmset(this._toKey(id), row, (err, message) => {
-				this._listen('insert', err, message);
+				this._listen('insert', err, row);
 			});
 		});
+		return this;
 	}
 
 	update (id, row) {
@@ -78,18 +82,20 @@ class Model {
 		client.exists(key, (err, exists) => {
 			if (exists) {
 				client.hmset(key, row, (err, message) => {
-					this._listen('update', err, message);
+					this._listen('update', err, row);
 				});
 			} else {
 				this._listen('error', `Not found Key. ${key}`);
 			}
 		});
+		return this;
 	}
 
 	delete (id, row) {
 		client.del(this._toKey(id), (err, message) => {
-			this._listen('delete', err, message);
+			this._listen('delete', err, id);
 		});
+		return this;
 	}
 
 	_toKey (id) {

@@ -50,24 +50,40 @@ class MDService {
 	}
 
 	static tagged (mdId, tagId, callback) {
-		Relation.create(mdId, tagId, callback);
+		Aggregation.findTags(mdId, (tags) => {
+			const exists = tags.filter((self) => {
+				return self.id === tagId;
+			});
+			if (exists.length === 0) {
+				Relation.create(mdId, tagId, callback);
+			} else {
+				console.log('Already relation exists. mdId=' + mdId + ' tagId=' + tagId);
+				// callback(null);
+				callback(exists.pop());
+			}
+		});
 	}
 
 	static untagged (mdId, tagId, callback) {
 		Relation.findByTagId(tagId, (rows) => {
-			for (let row of rows) {
-				if (row.mdId == mdId) {
-					Relation.destroy(Number(row.id), (message) => { console.log(message); });
-				}
-			}
+			const ids = rows.map((self) => { return self.id; });
+			const destroy = (id) => {
+				Relation.destroy(Number(id), (id) => {
+					if (ids.length > 0) {
+						destroy(ids.shift());
+					} else {
+						callback(rows);
+					}
+				});
+			};
+			destroy(ids.shift());
 		});
-		callback('OK');
 	}
 
 	static untaggedAll (tagId, callback) {
 		Relation.findByTagId(tagId, (rows) => {
 			for (let row of rows) {
-				Relation.destroy(Number(row.id), (message) => { console.log(message); });
+				Relation.destroy(Number(row.id), (id) => { console.log(id); });
 			}
 		});
 		Tag.destroy(tagId, callback);
@@ -76,7 +92,7 @@ class MDService {
 	static invalidate (mdId, callback) {
 		Relation.findByMDId(mdId, (rows) => {
 			for (let row of rows) {
-				Relation.destroy(Number(row.id), (message) => { console.log(message); });
+				Relation.destroy(Number(row.id), (id) => { console.log(id); });
 			}
 		});
 		MD.destroy(mdId, callback);

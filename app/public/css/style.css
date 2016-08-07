@@ -94,6 +94,12 @@ a, a:hover, a:visited, a:link, a:active {
 	background-color: #222;
 }
 
+.md-h {
+	padding: 8px 0 0 5px;
+	height: 24px;
+	background-color: #444;
+}
+
 #md-tool {
 	width: 100%;
 	height: 32px;
@@ -126,8 +132,41 @@ a, a:hover, a:visited, a:link, a:active {
 	padding: 0;
 	border: none;
 	border-radius: 0;
-	background-color: #444;
+	background-color: #222;
 	color: #ccc;
+}
+
+#md-tag-input {
+	width: 100%;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	border: none;
+	background-color: #222;
+	color: #ccc;
+}
+
+#md-tag-input:focus {
+	outline: none;
+}
+
+.md-tag-item:nth-child(odd) {
+	background-color: #444;
+}
+
+.md-tag-header {
+	display: table;
+}
+
+.md-tag-header > * {
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.md-tag-header > a {
+	width: 32px;
+	height: 32px;
 }
 
 /* console styles */

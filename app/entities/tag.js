@@ -9,26 +9,26 @@ class Tag {
 	}
 
 	static get (id, callback) {
-		Model.factory(TABLE_NAME).on('select', callback).at(id);
+		return Model.factory(TABLE_NAME).on('select', callback).at(id);
 	}
 
 	// get all
 	static all (callback) {
-		Model.factory(TABLE_NAME).on('select', callback).find();
+		return Model.factory(TABLE_NAME).on('select', callback).find();
 	}
 
 	static findByIds (ids, callback) {
-		Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
+		return Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
 	}
 
 	// create from name
 	static create (name, callback) {
-		Model.factory(TABLE_NAME).on('insert', callback).insert({ name: name });
+		return Model.factory(TABLE_NAME).on('insert', callback).insert({ name: name });
 	}
 
 	// destroy by id
 	static destroy (id, callback) {
-		Model.factory(TABLE_NAME).on('delete', callback).delete(id);
+		return Model.factory(TABLE_NAME).on('delete', callback).delete(id);
 	}
 }
 

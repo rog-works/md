@@ -18,8 +18,7 @@
 						<span class="md-item-header">
 							<a data-bind="click: $data.edit">+</a>
 							<a data-bind="click: $data.delete">-</a>
-							<span data-bind="text: '[' + $data.id + ']' "></span>
-							<span class="md-item-title" data-bind="text: $data.title, click: $data.show, css: { expand: $data.closed() === false }"></span>
+							<span class="md-item-title" data-bind="text: '[' + $data.id + '] ' + $data.title(), click: $data.show, css: { expand: $data.closed() === false }"></span>
 						</span>
 						<div class="md-item-content" data-bind="css: { hide: $data.closed }">
 							<div data-bind="html: $data.content"></div>
@@ -33,11 +32,27 @@
 			<div id="md-page-create" data-bind="css: { hide: page() !== 'create' }">
 				<div id="md-tool">
 					<span class="md-tool-button">
-						<a data-bind="click: append">save</a>
+						<a data-bind="click: save">save</a>
 					</span>
 				</div>
-				<div id=md-body-wrap class="hide-scroll">
+				<div class="md-h">Body</div>
+				<div id="md-body-wrap" class="hide-scroll">
 					<textarea id="md-body" data-bind="value: maker.body"></textarea>
+				</div>
+				<div class="md-h">Tags</div>
+				<div id="md-tags-wrap">
+					<input id="md-tag-input" data-bind="value: tag.input, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
+					<datalist id="list-tags" data-bind="foreach: tag.items">
+						<option data-bind="value: $data.name, text: '[' + $data.id + '] ' + $data.name"></option>
+					</datalist>
+					<div id="md-tags" data-bind="foreach: maker.tags">
+						<div class="md-tag-item">
+							<div class="md-tag-header">
+								<a data-bind="click: $data.untagged">-</a>
+								<span class="md-tag-title" data-bind="text: '[' + $data.id + '] ' + $data.name"></span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div id="md-page-console" class="hide-scroll" data-bind="css: { hide: page() !== 'console' }, foreach: console.lines">
@@ -56,6 +71,7 @@
 		<script type="text/javascript" charset="utf8" src="/vendors/marked/marked.js"></script>
 		<script type="text/javascript" charset="utf8" src="/vendors/prism/prism.js"></script>
 		<script type="text/javascript" charset="utf8" src="/js/models/console.js"></script>
+		<script type="text/javascript" charset="utf8" src="/js/models/tag.js"></script>
 		<script type="text/javascript" charset="utf8" src="/js/models/md.js"></script>
 		<script type="text/javascript" charset="utf8" src="/js/models/app.js"></script>
 		<script type="text/javascript" charset="utf8" src="/js/client.js"></script>

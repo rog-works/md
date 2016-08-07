@@ -41,24 +41,46 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 
 router.post('/', (req, res) => {
 	console.log('create able!!', req.body.body);
-	Entity.create(req.body.body, (message) => {
-		Render.json(res, message);
+	Entity.create(req.body.body, (entity) => {
+		Render.json(res, entity);
 	});
 });
 
 router.put('/:id([\\d]+)', (req, res) => {
 	console.log('update able!!', req.params.id, req.body.body);
 	const id = Number(req.params.id);
-	Entity.update(id, req.body.body, (message) => {
-		Render.json(res, message);
+	Entity.update(id, req.body.body, (entity) => {
+		Render.json(res, entity);
+	});
+});
+
+router.put('/:id([\\d]+)/:tagId(\\d]+)', (req, res) => {
+	console.log('tagged able!!', req.params.id, req.params.tagId);
+	const id = Number(req.params.id);
+	const tagId = Number(req.params.tagId);
+	Aggregation.tagged(id, tagId, (relation) => {
+		if (row === null) {
+			Render.conflict(res);
+		} else {
+			Render.json(res, relation);
+		}
+	});
+});
+
+router.delete('/:id([\\d]+)/:tagId(\\d]+)', (req, res) => {
+	console.log('untagged able!!', req.params.id, req.params.tagId);
+	const id = Number(req.params.id);
+	const tagId = Number(req.params.tagId);
+	Aggregation.untagged(id, tagId, (relations) => {
+		Render.json(res, relations);
 	});
 });
 
 router.delete('/:id([\\d]+)', (req, res) => {
 	console.log('destroy able!!', req.params.id);
 	const id = Number(req.params.id);
-	Aggregation.invalidate(id, (message) => {
-		Render.json(res, message);
+	Aggregation.invalidate(id, (id) => {
+		Render.json(res, id);
 	});
 });
 

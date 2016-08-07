@@ -31,25 +31,27 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 
 router.post('/', (req, res) => {
 	console.log('create able!!', req.body.tag);
-	Entity.create(req.body.tag, (message) => {
-		Render.json(res, message);
-	});
-});
-
-router.put('/:id([\\d]+)/:mdId([\\d])', (req, res) => {
-	console.log('update able!!', req.params.id, req.params.mdId);
-	let id = Number(req.params.id);
-	let mdId = Number(req.params.mdId);
-	Aggregation.tagged(id, mdId, (message) => {
-		Render.json(res, message);
+	Entity.all((tags) => {
+		const name = req.body.tag;
+		const exists = tags.filter((self) => {
+			return self.name === name;
+		});
+		if (exists.length === 0) {
+			Entity.create(name, (entity) => {
+				Render.json(res, entity);
+			});
+		} else {
+			console.log('Already tag exists. ' + name);
+			// Render.conflict(res);
+			Render.json(res, exists.pop());;
+		}
 	});
 });
 
 router.delete('/:id([\\d]+)', (req, res) => {
-	console.log('destroy able!!', req.params.id);
-	let id = Number(req.params.id);
-	Aggregation.untagged(id, (message) => {
-		Render.json(res, message);
+	console.log('delete able!!', req.params.id);
+	Aggregation.untaggedAll(id, (id) => {
+		Render.json(res, id);
 	});
 });
 

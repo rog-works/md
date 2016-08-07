@@ -40,7 +40,25 @@ class MD {
 	}
 
 	static update (id, body, callback) {
-		MD.send(`/${this.id}`, {type: 'PUT', data: {body: body}}, cacllback);
+		MD.send(`/${id}`, {type: 'PUT', data: {body: body}}, callback);
+	}
+
+	tagged (tagId) {
+		MD.send(`/${id}/${tagId}`, {type: 'DELETE'}, (relation) => {
+			const target = this.tags.remove((self) => {
+				return relation.tagId === self.id;
+			});
+			console.log(`${this.id} ${target.id} untagged`);
+		});
+	}
+
+	untagged (tagId) {
+		MD.send(`/${id}/${tagId}`, {type: 'DELETE'}, (relation) => {
+			const target = this.tags.remove((self) => {
+				return relation.tagId === self.id;
+			});
+			console.log(`${this.id} ${target.id} untagged`);
+		});
 	}
 
 	static empty () {
@@ -59,16 +77,16 @@ class MD {
 
 	load () {
 		this.body('<img src="' + LIB.params.waitImgUrl + '" />');
-		MD.send(`/${this.id}.json`, {}, (md) => {
-			this.deepCopyFromEntity(md);
+		MD.send(`/${this.id}.json`, {}, (entity) => {
+			this.deepCopyFromEntity(entity);
 		});
 	}
 
 	delete () {
-		MD.send(`/${this.id}`, {type: 'DELETE'}, () => {
+		MD.send(`/${this.id}`, {type: 'DELETE'}, (id) => {
 			// XXX depends on App...
 			const target = LIB.app.mds.remove((self) => {
-				return self.id === this.id;
+				return self.id === id;
 			});
 			console.log(`${target} deleted`);
 		});
@@ -106,17 +124,5 @@ class MD {
 		for (const tag of source.tags()) {
 			this.tags.push(new Tag(tag));
 		}
-	}
-}
-
-class Tag {
-	constructor (entity) {
-		this.id = entity.id;
-		this.name = entity.name;
-	}
-
-	search () {
-		// XXX depands on App...
-		App.search(this.id);
 	}
 }

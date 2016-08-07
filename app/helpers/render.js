@@ -14,6 +14,9 @@ let Render = {
 	notFound: (res) => {
 		res.sendStatus(404);
 	},
+	conflict: (res) => {
+		res.sendStatus(409);
+	},
 	json: (res, body) => {
 		res.contentType('application/json');
 		Render._sendProxy(res, JSON.stringify(body));
