@@ -23,7 +23,7 @@
 						<div class="md-item-content" data-bind="css: { hide: $data.closed }">
 							<div data-bind="html: $data.content"></div>
 							<div data-bind="foreach: $data.tags">
-								<a data-bind="text: $data.name, click: $data.search"></a>
+								<a class="md-item-tag" data-bind="text: $data.name, click: $data.search"></a>
 							</div>
 						</div>
 					</div>
@@ -32,7 +32,10 @@
 			<div id="md-page-create" data-bind="css: { hide: page() !== 'create' }">
 				<div id="md-tool">
 					<span class="md-tool-button">
-						<a data-bind="click: save">save</a>
+						<a data-bind="click: create">create</a>
+					</span>
+					<span class="md-tool-button">
+						<a data-bind="click: update">update</a>
 					</span>
 				</div>
 				<div class="md-h">Body</div>
@@ -43,13 +46,13 @@
 				<div id="md-tags-wrap">
 					<input id="md-tag-input" data-bind="value: tagMaker.name, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
 					<datalist id="list-tags" data-bind="foreach: tags">
-						<option data-bind="value: $data.name, text: '[' + $data.id + '] ' + $data.name"></option>
+						<option data-bind="value: $data.name, text: '[' + $data.id + '] ' + $data.name()"></option>
 					</datalist>
 					<div id="md-tags" data-bind="foreach: maker.tags">
 						<div class="md-tag-item">
 							<div class="md-tag-header">
 								<a data-bind="click: $data.untagged">-</a>
-								<span class="md-tag-title" data-bind="text: '[' + $data.id + '] ' + $data.name"></span>
+								<span class="md-tag-title" data-bind="text: '[' + $data.id + '] ' + $data.name()"></span>
 							</div>
 						</div>
 					</div>

@@ -1,15 +1,15 @@
 class MD {
-	constructor (md) {
-		this.id = md.id;
-		this.title = ko.observable(md.title);
-		this.body = ko.observable(md.body || '');
+	constructor (entity) {
+		this.id = Number(entity.id);
+		this.title = ko.observable(entity.title);
+		this.body = ko.observable(entity.body || '');
+		this.tags = ko.observableArray(entity.tags || '');
 		this.content = ko.observable('');
-		this.tags = ko.observableArray(md.tags || '');
 		this.closed = ko.observable(true);
 	}
 
 	static send (url, data, callback) {
-	    const _url = `/md${url}`;
+		const _url = `/md${url}`;
 		let _data = {
 			url: _url,
 			type: 'GET',
@@ -40,34 +40,8 @@ class MD {
 		MD.send('/', {type: 'POST', data: {body: body}}, callback);
 	}
 
-	static delete (id, callback) {
+	static destroy (id, callback) {
 		MD.send(`/${id}`, {type: 'DELETE'}, callback);
-	}
-
-	update () {
-		MD.send(`/${this.id}`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
-			this.deepCopyFromEntity(entity);
-		});
-	}
-
-	tagged (tags) {
-	    for (const tag of tags) {
-    		MD.send(`/${id}/${tag.id}`, {type: 'PUT'}, (relation) => {
-    			this.tags.push(tag);
-    			console.log(`${this.id} ${tag.id} tagged`);
-    		});
-	    }
-	}
-
-	untagged (tags) {
-	    for (const tag of tags) {
-    		MD.send(`/${id}/${tag.id}`, {type: 'DELETE'}, (relation) => {
-    			const target = this.tags.remove((self) => {
-    				return relation.tagId === self.id;
-    			});
-    			console.log(`${this.id} ${target.id} untagged`);
-    		});
-	    }
 	}
 
 	static empty () {
@@ -77,7 +51,13 @@ class MD {
 		});
 	}
 
-	show (id) {
+	update () {
+		MD.send(`/${this.id}`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
+			this.copyFromEntity(entity);
+		});
+	}
+
+	show () {
 		if (this.body().length === 0) {
 			this.load();
 		}
@@ -87,14 +67,38 @@ class MD {
 	load () {
 		this.body('<img src="' + LIB.params.waitImgUrl + '" />');
 		MD.send(`/${this.id}.json`, {}, (entity) => {
-			this.deepCopyFromEntity(entity);
+			this.copyFromEntity(entity);
+		});
+	}
+
+	delete () {
+		// XXX
+		LIB.app.destroy(this);
+	}
+
+	tagged (tag, callback) {
+		MD.send(`/${this.id}/${tag.id}`, {type: 'PUT'}, (relation) => {
+			this.tags.push(tag);
+			callback(tag);
+		});
+	}
+
+	untagged (tag, callback) {
+		MD.send(`/${this.id}/${tag.id}`, {type: 'DELETE'}, (relations) => {
+			const removeIds = relations.map((self) => {
+				return Number(self.tagId);
+			});
+			const target = this.tags.remove((self) => {
+				return removeIds.indexOf(self.id) !== -1;
+			}).pop();
+			callback(target);
 		});
 	}
 
 	edit () {
 		if (this.body().length > 0) {
 			// XXX depends on App...
-			LIB.app.maker.deepCopy(this);
+			LIB.app.maker.copy(this);
 		}
 	}
 
@@ -102,26 +106,26 @@ class MD {
 		this.closed(!this.closed());
 	}
 
-	deepCopyFromEntity (source) {
-		this.id = source.id;
+	copyFromEntity (source) {
+		this.id = Number(source.id);
 		this.title(source.title);
 		this.body(source.body);
+		// XXX
 		this.content(LIB.app.decorate(source.body));
 		this.tags.removeAll();
-		// FIXME tags undefined???
-		for (const tag of (source.tags || [])) {
+		for (const tag of source.tags) {
 			this.tags.push(new Tag(tag));
 		}
 	}
 
-	deepCopy (source) {
+	copy (source) {
 		this.id = source.id;
 		this.title(source.title());
 		this.body(source.body());
 		this.content(source.content());
 		this.tags.removeAll();
 		for (const tag of source.tags()) {
-			this.tags.push(new Tag(tag));
+			this.tags.push(tag);
 		}
 	}
 }

@@ -5,7 +5,7 @@ const TABLE_NAME = 'tag';
 
 class Tag {
 	static keys () {
-		return ['id', 'name'];
+		return ['id', 'name', 'mds'];
 	}
 
 	static get (id, callback) {
@@ -19,6 +19,10 @@ class Tag {
 
 	static findByIds (ids, callback) {
 		return Model.factory(TABLE_NAME).on('select', callback).find((self) => { return ids.indexOf(Number(self.id)) !== -1; });
+	}
+
+	static containts (name, callback) {
+		return Model.factory(TABLE_NAME).on('select', callback).find((self) => { return name !== self.name; });
 	}
 
 	// create from name

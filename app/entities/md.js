@@ -5,8 +5,8 @@ const TABLE_NAME = 'md';
 
 class MD {
 	static keys () {
-		return ['id', 'title', 'body'];
-	};
+		return ['id', 'title', 'body', 'tags'];
+	}
 
 	static get (id, callback) {
 		Model.factory(TABLE_NAME).on('select', callback).at(id);
@@ -38,8 +38,8 @@ class MD {
 
 	// body to tite
 	static _toTitle (body) {
-		const pos = body.indexOf('\n');
-		const title = pos === -1 ? body : body.substr(0, pos);
+		const lines = body.split('\n');
+		const title = lines.length > 0 ? lines.shift() : 'No title';
 		return title;
 	}
 }

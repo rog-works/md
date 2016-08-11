@@ -46,6 +46,19 @@ router.post('/', (req, res) => {
 	});
 });
 
+router.put('/:id([\\d]+)/:tagId([\\d]+)', (req, res) => {
+	console.log('tagged able!!', req.params.id, req.params.tagId);
+	const id = Number(req.params.id);
+	const tagId = Number(req.params.tagId);
+	Aggregation.tagged(id, tagId, (relation) => {
+		if (relation === null) {
+			Render.conflict(res);
+		} else {
+			Render.json(res, relation);
+		}
+	});
+});
+
 router.put('/:id([\\d]+)', (req, res) => {
 	console.log('update able!!', req.params.id, req.body.body);
 	const id = Number(req.params.id);
@@ -54,20 +67,7 @@ router.put('/:id([\\d]+)', (req, res) => {
 	});
 });
 
-router.put('/:id([\\d]+)/:tagId(\\d]+)', (req, res) => {
-	console.log('tagged able!!', req.params.id, req.params.tagId);
-	const id = Number(req.params.id);
-	const tagId = Number(req.params.tagId);
-	Aggregation.tagged(id, tagId, (relation) => {
-		if (row === null) {
-			Render.conflict(res);
-		} else {
-			Render.json(res, relation);
-		}
-	});
-});
-
-router.delete('/:id([\\d]+)/:tagId(\\d]+)', (req, res) => {
+router.delete('/:id([\\d]+)/:tagId([\\d]+)', (req, res) => {
 	console.log('untagged able!!', req.params.id, req.params.tagId);
 	const id = Number(req.params.id);
 	const tagId = Number(req.params.tagId);

@@ -50,7 +50,7 @@ class MDService {
 	}
 
 	static tagged (mdId, tagId, callback) {
-		Aggregation.findTags(mdId, (tags) => {
+		MDService.findTags(mdId, (tags) => {
 			const exists = tags.filter((self) => {
 				return self.id === tagId;
 			});

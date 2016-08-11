@@ -5,16 +5,14 @@ class App {
 		this.mds = ko.observableArray([]);
 		this.maker = MD.empty();
 		this.tags = ko.observableArray([]);
-		this.tag = {
-			input: ko.observable('')
-		};
+		this.tagMaker = Tag.empty();
 		this.decorator = marked;
 		// XXX
 		this.decorator.setOptions({
 			langPrefix: 'language-'
 		});
 	}
-	
+
 	static init (id = 'md-main') {
 		let self = new App();
 		ko.applyBindings(self, document.getElementById(id));
@@ -28,12 +26,14 @@ class App {
 			for (const entity of entities) {
 				this.mds.push(new MD(entity));
 			}
+			console.log('Loaded mds.');
 		});
 		Tag.index((entities) => {
 			this.tags.removeAll();
 			for (const entity of entities) {
 				this.tags.push(new Tag(entity));
 			}
+			console.log('Loaded tags.');
 		});
 	}
 
@@ -43,34 +43,37 @@ class App {
 			for (const entity of entities) {
 				this.mds.push(new MD(entity));
 			}
-			this.maker.deepCopy(MD.empty());
+			this.maker.copy(MD.empty());
 		});
 	}
 
-	append () {
-		MD.create(this.maker.body(), (entity) => {
-		    const md = new MD(entity);
-			this.mds.push(md);
-			this.maker.deepCopy(md);
-		});
+	create () {
+		const title = window.prompt('input create md title');
+		if (title && title.length > 0) {
+			MD.create(title, (entity) => {
+				const md = new MD(entity);
+				this.mds.push(md);
+				this.maker.copy(md);
+				console.log(`Created md. ${md.id}`);
+			});
+		}
 	}
 
 	update () {
-	    const md = this.mds().filter((self) => {
-	        return self.id === this.maker.id;
-	    }).pop();
-	    if (md !== null) {
-	        md.deepCopy(this.maker);
-	        md.update();
-	    }
+		const md = this._getMD(this.maker.id);
+		if (md && this.maker.body().length > 0) {
+			md.copy(this.maker);
+			md.update();
+			console.log(`Updated md. ${md.id}`);
+		}
 	}
 	
-	delete (id) {
-        MD.delete(id, (id) => {
+	destroy (md) {
+		MD.destroy(md.id, (id) => {
 			const target = this.mds.remove((self) => {
 				return self.id === id;
 			});
-			console.log(`${target} deleted`);
+			console.log(`Deleted md. ${target}`);
 		});
 	}
 
@@ -82,28 +85,44 @@ class App {
 		if (e.keyCode !== 13) {
 			return true;
 		}
-		const tagName = this.tagMaker.name();
-		const tag = this.tags().filter((self) => {
-			return self.name() === tagName;
-		}).pop();
-		if (tag === null) {
-		    Tag.create(tagName, (entity) => {
-			    this.maker.tags.push(new Tag(entity));
-		    });
-		} else {
-			this.maker.tags.push(tag);
+		const md = this._getMD(this.maker.id);
+		if (!md) {
+			return true;
 		}
-		this.tagMaker.name('');
+		const tagName = this.tagMaker.name();
+		const exists = md.tags().filter((self) => {
+			return self.name() === tagName;
+		});
+		if (exists.length > 0) {
+			console.log(`Already tagged. ${md.id} ${exists.pop().id}`);
+			return true;
+		}
+		const tag = this._getTagByName(tagName);
+		const callback = (tag) => {
+			this.maker.copy(md);
+			this.tagMaker.copy(Tag.empty());
+			console.log(`Tagged. ${md.id} ${tag.id}`);
+		};
+		if (tag) {
+			md.tagged(tag, callback);
+		} else {
+			Tag.create(tagName, (entity) => {
+				const newTag = new Tag(entity);
+				this.tags.push(newTag);
+				md.tagged(newTag, callback);
+			});
+		}
 		return false;
 	}
 
-	untagged (md, tag) {
-	    MD.untagged(md.id, tag.id, (relation) => {
-    		const target = md.tags.remove((self) => {
-    			return tag.id === self.id;
-    		});
-    		console.log(`${target} untagged`);
-	    });
+	untagged (tag) {
+		const md = this._getMD(this.maker.id);
+		if (md) {
+			md.untagged(tag, (tag) => {
+				this.maker.copy(md);
+				console.log(`Untagged. ${md.id} ${tag.id}`);
+			});
+		}
 	}
 
 	// XXX
@@ -115,5 +134,17 @@ class App {
 			Prism.highlightElement(block);
 		}
 		return content;
+	}
+
+	_getMD (id) {
+		return this.mds().filter((self) => {
+			return self.id === id;
+		}).pop();
+	}
+
+	_getTagByName (name) {
+		return this.tags().filter((self) => {
+			return self.name() === name;
+		}).pop();
 	}
 }

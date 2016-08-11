@@ -31,11 +31,8 @@ router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
 
 router.post('/', (req, res) => {
 	console.log('create able!!', req.body.tag);
-	Entity.all((tags) => {
-		const name = req.body.tag;
-		const exists = tags.filter((self) => {
-			return self.name === name;
-		});
+	const name = req.body.tag;
+	Entity.containts(name, (exists) => {
 		if (exists.length === 0) {
 			Entity.create(name, (entity) => {
 				Render.json(res, entity);

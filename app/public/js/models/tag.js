@@ -2,8 +2,15 @@
 
 class Tag {
 	constructor (entity) {
-		this.id = entity.id;
+		this.id = Number(entity.id);
 		this.name = ko.observable(entity.name);
+	}
+
+	static empty () {
+		return new Tag({
+			id: -1,
+			name: ''
+		});
 	}
 
 	static send (url, data, callback) {
@@ -34,11 +41,16 @@ class Tag {
 
 	search () {
 		// XXX depands on App...
-		App.search(this.id);
+		LIB.app.search(this.id);
 	}
 
 	untagged () {
 		// XXX depands on App...
 		LIB.app.untagged(this);
+	}
+
+	copy (source) {
+		this.id = source.id;
+		this.name(source.name());
 	}
 }
