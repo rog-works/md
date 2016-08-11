@@ -2,54 +2,77 @@
 
 const Entity = require('../entities/tag');
 const Aggregation = require('../aggregations/mdservice');
-const Projector = require('../components/projector');
-const Render = require('../helpers/render');
-const router = require('express').Router();
+const Router = require('../components/router');
 
-router.get('/.:ext(json|csv)', (req, res) => {
-	console.log('index able!!', req.params.ext, req.query.filter);
-	let filter = req.query.filter || Entity.keys().join('|');
-	let accept = filter.split('|');
-	Entity.all((rows) => {
-		Render[req.params.ext](res, Projector.select(rows, accept));
-	});
-});
+class TagRouter extends Router {
+	constructor () {
+		super();
+	}
+	
+	index (ext, filter) {
+		Entity.all((rows) => {
+			this.view(rows, ext, filter);
+		});
+	}
 
-router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
-	console.log('show able!!', req.params.id, req.params.ext, req.query.filter);
-	let id = Number(req.params.id);
-	let filter = req.query.filter || Entity.keys().join('|');
-	let accept = filter.split('|');
-	Aggregation.getTag(id, (row) => {
-		if (row === null) {
-			Render.notFound(res);
-		} else {
-			Render[req.params.ext](res, Projector.select(row, accept));
-		}
-	});
-});
+	show (id, ext, filter) {
+		Aggregation.getTag(Number(id), (row) => {
+			this.view(row, ext, filter);
+		});
+	}
 
-router.post('/', (req, res) => {
-	console.log('create able!!', req.body.tag);
-	const name = req.body.tag;
-	Entity.containts(name, (exists) => {
-		if (exists.length === 0) {
-			Entity.create(name, (entity) => {
-				Render.json(res, entity);
-			});
-		} else {
-			console.log('Already tag exists. ' + name);
-			// Render.conflict(res);
-			Render.json(res, exists.pop());;
-		}
-	});
-});
+	create (name, ext, filter) {
+		Entity.containts(name, (exists) => {
+			if (exists.length === 0) {
+				Entity.create(name, (entity) => {
+					this.view(entity, ext, filter);
+				});
+			} else {
+				console.log(`Already tag exists. ${name}`);
+				// Render.conflict(res);
+				this.view(exists.pop(), ext, filter);
+			}
+		});
+	}
 
-router.delete('/:id([\\d]+)', (req, res) => {
-	console.log('delete able!!', req.params.id);
-	Aggregation.untaggedAll(id, (id) => {
-		Render.json(res, id);
-	});
-});
+	destroy (id, ext, filter) {
+		Aggregation.untaggedAll(id, (id) => {
+			this.view(id, ext, filter);
+		});
+	}
 
-module.exports = router;
+	_keys () {
+		return Entity.keys();
+	}
+
+	_routes () {
+		return [
+			{
+				method: 'get',
+				path: '/.:ext(json|csv)',
+				on: 'index',
+				args: ['params.ext', 'query.filter']
+			},
+			{
+				method: 'get',
+				path: '/:id([\\d]+).:ext(json|csv)',
+				on: 'show',
+				args: ['params.id', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'post',
+				path: '/.:ext(json|csv)',
+				on: 'create',
+				args: ['body.tag', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'delete',
+				path: '/:id([\\d]+).:ext(json|csv)',
+				on: 'destroy',
+				args: ['params.id', 'params.ext', 'query.filter']
+			}
+		]
+	}
+}
+
+module.exports = (new TagRouter()).bind();
