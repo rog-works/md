@@ -4,9 +4,9 @@ class App {
 		this.page = ko.observable('index');
 		this.mds = ko.observableArray([]);
 		this.maker = MD.empty();
+		this.tags = ko.observableArray([]);
 		this.tag = {
-			input: ko.observable(''),
-			items: ko.observableArray([])
+			input: ko.observable('')
 		};
 		this.decorator = marked;
 		// XXX
@@ -30,9 +30,9 @@ class App {
 			}
 		});
 		Tag.index((entities) => {
-			this.tag.items.removeAll();
+			this.tags.removeAll();
 			for (const entity of entities) {
-				this.tag.items.push(new Tag(entity));
+				this.tags.push(new Tag(entity));
 			}
 		});
 	}
@@ -43,69 +43,35 @@ class App {
 			for (const entity of entities) {
 				this.mds.push(new MD(entity));
 			}
+			this.maker.deepCopy(MD.empty());
 		});
 	}
 
-	save () {
-		if (this.maker.body().length === 0) {
-			return;
-		}
-		if (this.maker.id === -1) {
-			this._append();
-		} else {
-			this._update();
-		}
-	}
-
-	_append () {
+	append () {
 		MD.create(this.maker.body(), (entity) => {
-			const md = new MD(entity);
-			// this._appendTags(md, (res) => {
-				this.mds.push(md);
-				this.maker.deepCopy(MD.empty());
-			// });
+		    const md = new MD(entity);
+			this.mds.push(md);
+			this.maker.deepCopy(md);
 		});
 	}
 
-	_update () {
-		const md = this.mds().filter((self) => {
-			return self.id === this.maker.id;
-		}).pop();
-		if (md !== null) {
-			MD.update(this.maker.id, this.maker.body(), (entity) => {
-				// this._appendTags(md, (res) => {
-				// 	this._removeTags(md, () => {
-						md.deepCopyFromEntity(entity);
-						this.maker.deepCopy(MD.empty());
-				// 	});
-				// });
+	update () {
+	    const md = this.mds().filter((self) => {
+	        return self.id === this.maker.id;
+	    }).pop();
+	    if (md !== null) {
+	        md.deepCopy(this.maker);
+	        md.update();
+	    }
+	}
+	
+	delete (id) {
+        MD.delete(id, (id) => {
+			const target = this.mds.remove((self) => {
+				return self.id === id;
 			});
-		}
-	}
-
-	_appendTags (md, callback) {
-		for (const tag of md.tags()) {
-			if (tag.id === -1) {
-				Tag.create(tag.name, (entity) => {
-					this.tag.items.push(new Tag(entity));
-					md.tagged(md.id, entity.id, callback);
-				});
-			} else {
-				md.tagged(md.id, tag.id, callback);
-			}
-		}
-	}
-
-	_removeTags (md, callback) {
-		const tagIds = this.maker.tags().map((self) => {
-			return self.id;
+			console.log(`${target} deleted`);
 		});
-		const removeTagIds = md.tags().filter((self) => {
-			return tagIds.indexOf(self.id) === -1;
-		});
-		for (const tagId of removeTagIds) {
-			md.untagged(tagId);
-		}
 	}
 
 	activate (page) {
@@ -116,24 +82,28 @@ class App {
 		if (e.keyCode !== 13) {
 			return true;
 		}
-		const tagName = this.tag.input();
-		const exists = this.tag.items().filter((self) => {
-			return self.name === tagName;
-		});
-		if (exists.length === 0) {
-			this.maker.tags.push(new Tag({name: tagName}));
+		const tagName = this.tagMaker.name();
+		const tag = this.tags().filter((self) => {
+			return self.name() === tagName;
+		}).pop();
+		if (tag === null) {
+		    Tag.create(tagName, (entity) => {
+			    this.maker.tags.push(new Tag(entity));
+		    });
 		} else {
-			this.maker.tags.push(exists.pop());
+			this.maker.tags.push(tag);
 		}
-		this.tag.input('');
+		this.tagMaker.name('');
 		return false;
 	}
 
-	untagged (tag) {
-		const target = this.maker.tags.remove((self) => {
-			return (tag.id > 0) ? tag.id === self.id : tag.name === self.name;
-		});
-		console.log(`${target} untagged`);
+	untagged (md, tag) {
+	    MD.untagged(md.id, tag.id, (relation) => {
+    		const target = md.tags.remove((self) => {
+    			return tag.id === self.id;
+    		});
+    		console.log(`${target} untagged`);
+	    });
 	}
 
 	// XXX

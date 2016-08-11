@@ -9,19 +9,20 @@ class MD {
 	}
 
 	static send (url, data, callback) {
+	    const _url = `/md${url}`;
 		let _data = {
-			url: `/md${url}`,
+			url: _url,
 			type: 'GET',
 			dataType: 'json',
 			success: (res) => {
-				console.log('respond. ' + url);
+				console.log('respond. ' + _url);
 				callback(res);
 			},
 			error: (res, err) => {
 				console.error(err, res.status, res.statusText, res.responseText);
 			}
 		};
-		console.log('request. ' + url);
+		console.log('request. ' + _url);
 		$.ajax($.extend(_data, data));
 	}
 
@@ -39,26 +40,34 @@ class MD {
 		MD.send('/', {type: 'POST', data: {body: body}}, callback);
 	}
 
-	static update (id, body, callback) {
-		MD.send(`/${id}`, {type: 'PUT', data: {body: body}}, callback);
+	static delete (id, callback) {
+		MD.send(`/${id}`, {type: 'DELETE'}, callback);
 	}
 
-	tagged (tagId) {
-		MD.send(`/${id}/${tagId}`, {type: 'DELETE'}, (relation) => {
-			const target = this.tags.remove((self) => {
-				return relation.tagId === self.id;
-			});
-			console.log(`${this.id} ${target.id} untagged`);
+	update () {
+		MD.send(`/${this.id}`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
+			this.deepCopyFromEntity(entity);
 		});
 	}
 
-	untagged (tagId) {
-		MD.send(`/${id}/${tagId}`, {type: 'DELETE'}, (relation) => {
-			const target = this.tags.remove((self) => {
-				return relation.tagId === self.id;
-			});
-			console.log(`${this.id} ${target.id} untagged`);
-		});
+	tagged (tags) {
+	    for (const tag of tags) {
+    		MD.send(`/${id}/${tag.id}`, {type: 'PUT'}, (relation) => {
+    			this.tags.push(tag);
+    			console.log(`${this.id} ${tag.id} tagged`);
+    		});
+	    }
+	}
+
+	untagged (tags) {
+	    for (const tag of tags) {
+    		MD.send(`/${id}/${tag.id}`, {type: 'DELETE'}, (relation) => {
+    			const target = this.tags.remove((self) => {
+    				return relation.tagId === self.id;
+    			});
+    			console.log(`${this.id} ${target.id} untagged`);
+    		});
+	    }
 	}
 
 	static empty () {
@@ -79,16 +88,6 @@ class MD {
 		this.body('<img src="' + LIB.params.waitImgUrl + '" />');
 		MD.send(`/${this.id}.json`, {}, (entity) => {
 			this.deepCopyFromEntity(entity);
-		});
-	}
-
-	delete () {
-		MD.send(`/${this.id}`, {type: 'DELETE'}, (id) => {
-			// XXX depends on App...
-			const target = LIB.app.mds.remove((self) => {
-				return self.id === id;
-			});
-			console.log(`${target} deleted`);
 		});
 	}
 

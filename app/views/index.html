@@ -41,8 +41,8 @@
 				</div>
 				<div class="md-h">Tags</div>
 				<div id="md-tags-wrap">
-					<input id="md-tag-input" data-bind="value: tag.input, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
-					<datalist id="list-tags" data-bind="foreach: tag.items">
+					<input id="md-tag-input" data-bind="value: tagMaker.name, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
+					<datalist id="list-tags" data-bind="foreach: tags">
 						<option data-bind="value: $data.name, text: '[' + $data.id + '] ' + $data.name"></option>
 					</datalist>
 					<div id="md-tags" data-bind="foreach: maker.tags">

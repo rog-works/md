@@ -2,23 +2,25 @@
 
 class Tag {
 	constructor (entity) {
-		this.id = entity.id || -1;
-		this.name = entity.name;
+		this.id = entity.id;
+		this.name = ko.observable(entity.name);
 	}
 
 	static send (url, data, callback) {
+	    const _url = `/tag${url}`;
 		let _data = {
-			url: `/tag${url}`,
+			url: _url,
 			type: 'GET',
 			dataType: 'json',
 			success: (res) => {
-				console.log('respond. ' + url);
+				console.log('respond. ' + _url);
 				callback(res);
 			},
 			error: (res, err) => {
 				console.error(err, res.status, res.statusText, res.responseText);
 			}
 		};
+		console.log('request. ' + _url);
 		$.ajax($.extend(_data, data));
 	}
 
