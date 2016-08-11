@@ -11,10 +11,10 @@ let Render = {
 			res.sendStatus(404);
 		}
 	},
-	notFound: (res) => {
+	notFound: (res, body = null) => {
 		res.sendStatus(404);
 	},
-	conflict: (res) => {
+	conflict: (res, body = null) => {
 		res.sendStatus(409);
 	},
 	json: (res, body) => {

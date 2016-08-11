@@ -2,86 +2,117 @@
 
 const Entity = require('../entities/md');
 const Aggregation = require('../aggregations/mdservice');
-const Projector = require('../components/projector');
-const Render = require('../helpers/render');
-const router = require('express').Router();
+const Router = require('../components/router');
 
-router.get('/.:ext(json|csv)', (req, res) => {
-	console.log('index able!!', req.params.ext, req.query.filter);
-	const filter = req.query.filter || Entity.keys().join('|');
-	const accept = filter.split('|');
-	Entity.all((rows) => {
-		Render[req.params.ext](res, Projector.select(rows, accept));
-	});
-});
+class MDRouter extends Router {
+	constructor () {
+		super();
+	}
 
-router.get('/search/:tagId([\\d]+).:ext(json|csv)', (req, res) => {
-	console.log('search able!!', req.params.tagId, req.params.ext, req.query.filter);
-	const tagId = Number(req.params.tagId);
-	const filter = req.query.filter || Entity.keys().join('|');
-	const accept = filter.split('|');
-	Aggregation.findMDs(tagId, (rows) => {
-		Render[req.params.ext](res, Projector.select(rows, accept));
-	});
-});
+	index (ext, filter) {
+		Entity.all((rows) => {
+			this.view(rows, ext, filter);
+		});
+	}
 
-router.get('/:id([\\d]+).:ext(json|csv)', (req, res) => {
-	console.log('show able!!', req.params.id, req.params.ext, req.query.filter);
-	const id = Number(req.params.id);
-	const filter = req.query.filter || Entity.keys().join('|');
-	const accept = filter.split('|');
-	Aggregation.get(id, (row) => {
-		if (row === null) {
-			Render.notFound(res);
-		} else {
-			Render[req.params.ext](res, Projector.select(row, accept));
-		}
-	});
-});
+	show (id, ext, filter) {
+		Aggregation.get(Number(id), (row) => {
+			this.view(row, ext, filter);
+		});
+	}
 
-router.post('/', (req, res) => {
-	console.log('create able!!', req.body.body);
-	Entity.create(req.body.body, (entity) => {
-		Render.json(res, entity);
-	});
-});
+	create (body, ext, filter) {
+		Entity.create(body, (entity) => {
+			this.view(entity, ext, filter);
+		});
+	}
 
-router.put('/:id([\\d]+)/:tagId([\\d]+)', (req, res) => {
-	console.log('tagged able!!', req.params.id, req.params.tagId);
-	const id = Number(req.params.id);
-	const tagId = Number(req.params.tagId);
-	Aggregation.tagged(id, tagId, (relation) => {
-		if (relation === null) {
-			Render.conflict(res);
-		} else {
-			Render.json(res, relation);
-		}
-	});
-});
+	update (id, body, ext, filter) {
+		Entity.update(Number(id), body, (entity) => {
+			this.view(entity, ext, filter);
+		});
+	}
 
-router.put('/:id([\\d]+)', (req, res) => {
-	console.log('update able!!', req.params.id, req.body.body);
-	const id = Number(req.params.id);
-	Entity.update(id, req.body.body, (entity) => {
-		Render.json(res, entity);
-	});
-});
+	destroy (id, ext, filter) {
+		Aggregation.invalidate(Number(id), (id) => {
+			this.view(id, ext, filter);
+		});
+	}
 
-router.delete('/:id([\\d]+)/:tagId([\\d]+)', (req, res) => {
-	console.log('untagged able!!', req.params.id, req.params.tagId);
-	const id = Number(req.params.id);
-	const tagId = Number(req.params.tagId);
-	Aggregation.untagged(id, tagId, (relations) => {
-		Render.json(res, relations);
-	});
-});
+	search (tagId, ext, filter) {
+		Aggregation.findMDs(Number(tagId), (rows) => {
+			this.view(rows, ext, filter);
+		});
+	}
 
-router.delete('/:id([\\d]+)', (req, res) => {
-	console.log('destroy able!!', req.params.id);
-	const id = Number(req.params.id);
-	Aggregation.invalidate(id, (id) => {
-		Render.json(res, id);
-	});
-});
+	tagged (id, tagId, ext, filter) {
+		Aggregation.tagged(Number(id), Number(tagId), (relation) => {
+			this.view(relation, ext, filter);
+		});
+	}
 
-module.exports = router;
+	untagged (id, tagId, ext, filter) {
+		Aggregation.untagged(Number(id), Number(tagId), (relations) => {
+			this.view(relations, ext, filter);
+		});
+	}
+
+	_keys () {
+		return Entity.keys();
+	}
+
+	_routes () {
+		return [
+			{
+				method: 'get',
+				on: 'index',
+				path: '/.:ext(json|csv)',
+				args: ['params.ext', 'query.filter']
+			},
+			{
+				method: 'get',
+				on: 'show',
+				path: '/:id([\\d]+).:ext(json|csv)',
+				args: ['params.id', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'post',
+				on: 'create',
+				path: '/.:ext(json|csv)',
+				args: ['body.body', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'put',
+				on: 'update',
+				path: '/:id([\\d]+).:ext(json|csv)',
+				args: ['params.id', 'body.body', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'delete',
+				on: 'destroy',
+				path: '/:id([\\d]+).:ext(json|csv)',
+				args: ['params.id', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'get',
+				on: 'search',
+				path: '/search/:tagId([\\d]+).:ext(json|csv)',
+				args: ['params.tagId', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'put',
+				on: 'tagged',
+				path: '/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)',
+				args: ['params.id', 'params.tagId', 'params.ext', 'query.filter']
+			},
+			{
+				method: 'delete',
+				on: 'untagged',
+				path: '/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)',
+				args: ['params.id', 'params.tagId', 'params.ext', 'query.filter']
+			}
+		];
+	}
+}
+
+module.exports = (new MDRouter()).bind();

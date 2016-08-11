@@ -37,11 +37,11 @@ class MD {
 	}
 
 	static create (body, callback) {
-		MD.send('/', {type: 'POST', data: {body: body}}, callback);
+		MD.send('/.json', {type: 'POST', data: {body: body}}, callback);
 	}
 
 	static destroy (id, callback) {
-		MD.send(`/${id}`, {type: 'DELETE'}, callback);
+		MD.send(`/${id}.json`, {type: 'DELETE'}, callback);
 	}
 
 	static empty () {
@@ -52,7 +52,7 @@ class MD {
 	}
 
 	update () {
-		MD.send(`/${this.id}`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
+		MD.send(`/${this.id}.json`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
 			this.copyFromEntity(entity);
 		});
 	}
@@ -77,14 +77,14 @@ class MD {
 	}
 
 	tagged (tag, callback) {
-		MD.send(`/${this.id}/${tag.id}`, {type: 'PUT'}, (relation) => {
+		MD.send(`/${this.id}/${tag.id}.json`, {type: 'PUT'}, (relation) => {
 			this.tags.push(tag);
 			callback(tag);
 		});
 	}
 
 	untagged (tag, callback) {
-		MD.send(`/${this.id}/${tag.id}`, {type: 'DELETE'}, (relations) => {
+		MD.send(`/${this.id}/${tag.id}.json?filter=tagId`, {type: 'DELETE'}, (relations) => {
 			const removeIds = relations.map((self) => {
 				return Number(self.tagId);
 			});
