@@ -110,16 +110,12 @@ h1, h2, h3, h4, h5, p {
 }
 
 .md-tool-button {
-    width: 64px;
-    height: 32px;
-	display: table;
-}
-
-.md-tool-button > a {
-	display: table-cell;
-	vertical-align: middle;
+    width: 63px;
+    height: 24px;
+	padding-top: 8px;
     text-align: center;
 	border-right: solid 1px #444;
+	float: left;
 }
 
 #md-body-wrap {
