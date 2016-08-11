@@ -2,9 +2,10 @@
 
 const Entity = require('../entities/md');
 const Aggregation = require('../aggregations/mdservice');
+const Controller = require('../components/controller');
 const Router = require('../components/router');
 
-class MDRouter extends Router {
+class MDController extends Controller {
 	constructor () {
 		super();
 	}
@@ -57,62 +58,56 @@ class MDRouter extends Router {
 		});
 	}
 
-	_keys () {
+	keys () {
 		return Entity.keys();
 	}
 
-	_routes () {
+	routes () {
 		return [
-			{
-				method: 'get',
-				on: 'index',
-				path: '/.:ext(json|csv)',
-				args: ['params.ext', 'query.filter']
-			},
-			{
-				method: 'get',
-				on: 'show',
-				path: '/:id([\\d]+).:ext(json|csv)',
-				args: ['params.id', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'post',
-				on: 'create',
-				path: '/.:ext(json|csv)',
-				args: ['body.body', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'put',
-				on: 'update',
-				path: '/:id([\\d]+).:ext(json|csv)',
-				args: ['params.id', 'body.body', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'delete',
-				on: 'destroy',
-				path: '/:id([\\d]+).:ext(json|csv)',
-				args: ['params.id', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'get',
-				on: 'search',
-				path: '/search/:tagId([\\d]+).:ext(json|csv)',
-				args: ['params.tagId', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'put',
-				on: 'tagged',
-				path: '/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)',
-				args: ['params.id', 'params.tagId', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'delete',
-				on: 'untagged',
-				path: '/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)',
-				args: ['params.id', 'params.tagId', 'params.ext', 'query.filter']
-			}
+			Router.get('/.:ext(json|csv)')
+				.params('ext')
+				.query('filter')
+				.on('index'),
+			Router.get('/:id([\\d]+).:ext(json|csv)')
+				.params('id')
+				.params('ext')
+				.query('filter')
+				.on('show'),
+			Router.post('/.:ext(json|csv)')
+				.body('body')
+				.params('ext')
+				.query('filter')
+				.on('create'),
+			Router.put('/:id([\\d]+).:ext(json|csv)')
+				.params('id')
+				.body('body')
+				.params('ext')
+				.query('filter')
+				.on('update'),
+			Router.delete('/:id([\\d]+).:ext(json|csv)')
+				.params('id')
+				.params('ext')
+				.query('filter')
+				.on('destroy'),
+			Router.get('/search/:tagId([\\d]+).:ext(json|csv)')
+				.params('tagId')
+				.params('ext')
+				.query('filter')
+				.on('search'),
+			Router.put('/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)')
+				.params('id')
+				.params('tagId')
+				.params('ext')
+				.query('filter')
+				.on('tagged'),
+			Router.delete('/:id([\\d]+)/:tagId([\\d]+).:ext(json|csv)')
+				.params('id')
+				.params('tagId')
+				.params('ext')
+				.query('filter')
+				.on('untagged')
 		];
 	}
 }
 
-module.exports = (new MDRouter()).bind();
+module.exports = Router.bind(new MDController());

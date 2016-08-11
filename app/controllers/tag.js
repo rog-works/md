@@ -2,9 +2,10 @@
 
 const Entity = require('../entities/tag');
 const Aggregation = require('../aggregations/mdservice');
+const Controller = require('../components/controller');
 const Router = require('../components/router');
 
-class TagRouter extends Router {
+class TagController extends Controller {
 	constructor () {
 		super();
 	}
@@ -41,38 +42,33 @@ class TagRouter extends Router {
 		});
 	}
 
-	_keys () {
+	keys () {
 		return Entity.keys();
 	}
 
-	_routes () {
+	routes () {
 		return [
-			{
-				method: 'get',
-				path: '/.:ext(json|csv)',
-				on: 'index',
-				args: ['params.ext', 'query.filter']
-			},
-			{
-				method: 'get',
-				path: '/:id([\\d]+).:ext(json|csv)',
-				on: 'show',
-				args: ['params.id', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'post',
-				path: '/.:ext(json|csv)',
-				on: 'create',
-				args: ['body.tag', 'params.ext', 'query.filter']
-			},
-			{
-				method: 'delete',
-				path: '/:id([\\d]+).:ext(json|csv)',
-				on: 'destroy',
-				args: ['params.id', 'params.ext', 'query.filter']
-			}
+			Router.get('/.:ext(json|csv)')
+				.params('ext')
+				.query('filter')
+				.on('index'),
+			Router.get('/.:ext(json|csv)')
+				.params('id')
+				.params('ext')
+				.query('filter')
+				.on('show'),
+			Router.post('/.:ext(json|csv)')
+				.body('tag')
+				.params('ext')
+				.query('filter')
+				.on('create'),
+			Router.delete('/.:ext(json|csv)')
+				.params('id')
+				.params('ext')
+				.query('filter')
+				.on('destroy')
 		]
 	}
 }
 
-module.exports = (new TagRouter()).bind();
+module.exports = Router.bind(new TagController());
