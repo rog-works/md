@@ -1,10 +1,11 @@
 'use strict';
 
-let CSV = {
-	stringify: (body) => {
+class CSV {
+	static stringify (body) {
 		return CSV._parse(body, '\n');
-	},
-	_parse: (body, delemiter) => {
+	}
+
+	static _parse (body, delemiter) {
 		if (Array.isArray(body)) {
 			return body.map((self) => {
 				return CSV._parse(self, ',');
