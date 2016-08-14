@@ -5,72 +5,80 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" charset="utf8" href="https://cdnjs.cloudflare.com/ajax/libs/sanitize.css/2.0.0/sanitize.min.css">
-		<link rel="stylesheet" charset="utf8" href="/vendors/prism/prism.css">
+		<link rel="stylesheet" chatset="utf8" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+		<link rel="stylesheet" charset="utf8" href="/vendors/normalize.css">
 		<link rel="stylesheet" charset="utf8" href="/vendors/markdown.css">
 		<link rel="stylesheet" charset="utf8" href="/css/style.css">
 	</head>
-	<body>
-		<div id="md-main">
-			<div id="md-page-index" class="hide-scroll" data-bind="css: { hide: page() !== 'index' }">
-				<div id="md-entry" data-bind="foreach: mds">
-					<div class="md-item">
-						<span class="md-item-header">
-							<a data-bind="click: $data.edit">+</a>
-							<a data-bind="click: $data.delete">-</a>
-							<span class="md-item-title" data-bind="text: '[' + $data.id + '] ' + $data.title(), click: $data.show, css: { expand: $data.closed() === false }"></span>
+	<body class="bc1 fc1">
+		<div id="md-main" class="bc2">
+			<div class="page left fill scroll hide-scroll" data-bind="css: { hide: page() !== 'index' }">
+				<div data-bind="foreach: mds">
+					<div class="bc2 stripe">
+						<span class="h1 table">
+							<span class="w1 cell center" data-bind="click: $data.edit"><i class="fa fa-pencil"></i></span>
+							<span class="w1 cell center" data-bind="click: $data.delete"><i class="fa fa-remove"></i></span>
+							<span class="cell center" data-bind="text: '[' + $data.id + '] ' + $data.title(), click: $data.show, css: { expand: $data.closed() === false }"></span>
 						</span>
-						<div class="md-item-content" data-bind="css: { hide: $data.closed }">
+						<div data-bind="css: { hide: $data.closed }">
 							<div data-bind="html: $data.content"></div>
 							<div data-bind="foreach: $data.tags">
-								<a class="md-item-tag" data-bind="text: $data.name, click: $data.search"></a>
+								<a data-bind="text: $data.name, click: $data.search"></a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div id="md-page-create" data-bind="css: { hide: page() !== 'create' }">
-				<div id="md-tool">
-					<div class="md-tool-button">
-						<a data-bind="click: create">create</a>
-					</div>
-					<div class="md-tool-button">
-						<a data-bind="click: update">update</a>
+			<div class="page left fill" data-bind="css: { hide: page() !== 'create' }">
+				<div class="fill-w h1">
+					<div class="fill-h table">
+						<a class="w1 cell center" data-bind="click: create"><i class="fa fa-plus"></i></a>
+						<a class="w1 cell center" data-bind="click: update"><i class="fa fa-check"></i></a>
 					</div>
 				</div>
-				<div class="md-h">Body</div>
-				<div id="md-body-wrap" class="hide-scroll">
-					<textarea id="md-body" data-bind="value: maker.body"></textarea>
+				<div class="bc3 fill-w h1 table">
+					<div class="cell middle"><i class="fa fa-sticky-note"></i> Body</div>
 				</div>
-				<div class="md-h">Tags</div>
-				<div id="md-tags-wrap">
-					<input id="md-tag-input" data-bind="value: tagMaker.name, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
+				<div class="fill-w h50">
+					<textarea class="bc2 fc1 fill less" data-bind="value: maker.body"></textarea>
+				</div>
+				<div class="bc3 fill-w h1 table">
+					<div class="cell middle"><i class="fa fa-tag"></i> Tags</div>
+				</div>
+				<div class="fill-w">
+					<input class="bc2 fc1 fill-w less" data-bind="value: tagMaker.name, valueUpdate: 'keypress', event: { keypress: tagged }" autocomplete="on" list="list-tags" />
 					<datalist id="list-tags" data-bind="foreach: tags">
 						<option data-bind="value: $data.name, text: '[' + $data.id + '] ' + $data.name()"></option>
 					</datalist>
-					<div id="md-tags" data-bind="foreach: maker.tags">
-						<div class="md-tag-item">
-							<div class="md-tag-header">
-								<a data-bind="click: $data.untagged">-</a>
-								<span class="md-tag-title" data-bind="text: '[' + $data.id + '] ' + $data.name()"></span>
+					<div class="fill-w" data-bind="foreach: maker.tags">
+						<div class="bc2 fill-w h1 stripe">
+							<div class="fill-h table">
+								<span class="w1 cell center" data-bind="click: $data.untagged"><i class="fa fa-remove"></i></span>
+								<span class="cell center" data-bind="text: '[' + $data.id + '] ' + $data.name()"></span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div id="md-page-console" class="hide-scroll" data-bind="css: { hide: page() !== 'console' }, foreach: console.lines">
+			<div class="page left fill scroll hide-scroll" data-bind="css: { hide: page() !== 'console' }, foreach: console.lines">
 				<div data-bind="click: $data.expand, css: { expand: $data.expanded }">
 					<div data-bind="text: $data.body"></div>
 				</div>
 			</div>
-			<div class="bc1" id="md-tab-container">
-				<div class="md-tab-button" data-bind="css: { active: page() === 'index'}"><a data-bind="click: activate('index')">P</a></div>
-				<div class="md-tab-button" data-bind="css: { active: page() === 'create'}"><a data-bind="click: activate('create')">A</a></div>
-				<div class="md-tab-button" data-bind="css: { active: page() === 'console'}"><a data-bind="click: activate('console')">C</a></div>
+			<div class="bc1 right w1 fill-h">
+				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'index'}">
+					<div class="cell center" data-bind="click: activate('index')"><i class="fa fa-search"></i></div>
+				</div>
+				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'create'}">
+					<div class="cell center" data-bind="click: activate('create')"><i class="fa fa-pencil"></i></div>
+				</div>
+				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'console'}">
+					<div class="cell center" data-bind="click: activate('console')"><i class="fa fa-commenting"></i></div>
+				</div>
 			</div>
 		</div>
 		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
-		<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+		<script type="text/javascript" charset="utf8" src="/vendors/jquery-2.2.1.min.js"></script>
 		<script type="text/javascript" charset="utf8" src="/vendors/marked/marked.js"></script>
 		<script type="text/javascript" charset="utf8" src="/vendors/prism/prism.js"></script>
 		<script type="text/javascript" charset="utf8" src="/js/models/console.js"></script>

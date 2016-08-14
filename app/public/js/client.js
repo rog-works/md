@@ -21,8 +21,8 @@ $(() => {
 		const main = $('#md-main');
 		main.width(w);
 		main.height(h);
-		// XXX -32px for tag container
-		for (const e of $('[id^=md-page]')) {
+		// XXX -32px for page
+		for (const e of $('.page')) {
 			$(e).width(w - 32);
 		}
 	};
