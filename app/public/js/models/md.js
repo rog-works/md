@@ -112,6 +112,10 @@ class MD {
 		this.body(source.body);
 		// XXX
 		this.content(LIB.app.decorate(source.body));
+		this.tags.removeAll();
+		for (const tag of source.tags) {
+			this.tags.push(new Tag(tag));
+		}
 	}
 
 	copy (source) {

@@ -128,11 +128,11 @@ class App {
 	// XXX
 	decorate (body) {
 		let content = this.decorator(body);
-		let blocks = $(content).find('code');
-		for (let block of blocks) {
-			// FIXME
-			Prism.highlightElement(block);
-		}
+		// let blocks = $(content).find('code');
+		// for (let block of blocks) {
+		// 	// FIXME
+		// 	Prism.highlightElement(block);
+		// }
 		return content;
 	}
 

@@ -1,13 +1,9 @@
 /* common styles */
-.hide {
-	display: none;
-}
-
 body {
 	margin: 0;
 	padding: 0;
-	color: white;
-	background-color: black;
+	/*color: white;*/
+	/*background-color: black;*/
 }
 
 div {
@@ -15,98 +11,236 @@ div {
     padding: 0;
 }
 
-a, a:hover, a:visited, a:link, a:active {
-	color: white;
+/* align settings */
+.auto {
+	margin: 0 auto;
 }
 
-h1, h2, h3, h4, h5, p {
-	color: white;
+.left {
+	float: left;
 }
 
-.hide-scroll::-webkit-scrollbar {
+.right {
+	float: right;
+}
+
+.center {
+	text-align: center;
+}
+
+.table {
+	display: table;
+}
+
+.cell {
+	display: table-cell;
+}
+
+.cell.center {
+	vertical-align: middle;
+}
+
+/* size settings */
+.fill {
+	width: 100%;
+	height: 100%;
+}
+
+.fill-w {
+	width: 100%;
+}
+
+.fill-h {
+	height: 100%;
+}
+
+.flex-w {
+	/* none */
+}
+
+.flex-h {
+	/* none */
+}
+
+.wh1 {
+	width: 32px;
+	height: 32px;
+}
+
+.w1 {
+	width: 32px;
+}
+
+.h1 {
+	height: 32px;
+}
+
+/* color settings */
+a.fc1,
+a.fc1:hover,
+a.fc1:visited,
+a.fc1:link,
+a.fc1:active {
+	color: #66f;
+}
+
+.fc1 {
+	color: #fff;
+}
+
+.fc2 {
+	color: #eee;
+}
+
+.fc3 {
+	color: #ccc;
+}
+
+.fc4 {
+	color: #aaa;
+}
+
+.bc1 {
+	background-color: #000;
+}
+
+.bc2 {
+	background-color: #222;
+}
+
+.bc3 {
+	background-color: #444;
+}
+
+.bc4 {
+	background-color: #666;
+}
+
+.pc1 {
+	background-color: #282;
+}
+
+.bc1.active,
+.bc2.active,
+.bc3.active,
+.bc4.active {
+	background-color: #282;
+}
+
+.bc1.stripe:nth-child(even) {
+	background-color: #222;
+}
+
+.bc2.stripe:nth-child(even) {
+	background-color: #444;
+}
+
+.bc3.stripe:nth-child(even) {
+	background-color: #666;
+}
+
+.bc4.stripe:nth-child(even) {
+	background-color: #888;
+}
+
+/* display settings */
+.hide {
 	display: none;
+}
+
+.scroll {
+	overflow: scroll;
+}
+
+.scroll.hide-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+.border-less {
+	border: none;
+	border-radius: 0;
+}
+
+.no-deco {
+	outline: none;
 }
 
 /* main styles */
 #md-main {
-	margin: 0 auto;
+	/*margin: 0 auto;*/
 }
 
 /* tab styles */
 #md-tab-container {
-    width: 32px;
-    float: right;
+    /*width: 32px;*/
+    /*float: right;*/
 }
 
 .md-tab-button {
-	width: 32px;
-	height: 32px;
-	display: table;
-}
-
-.md-tab-button.active {
-	background-color: #282;
+	/*width: 32px;*/
+	/*height: 32px;*/
+	/*display: table;*/
 }
 
 .md-tab-button > a {
-	display: table-cell;
-	vertical-align: middle;
-	text-align: center;
+	/*display: table-cell;*/
+	/*vertical-align: middle;*/
+	/*text-align: center;*/
 }
 
 /* index styles */
 #md-page-index {
-	height: 100%;
-	background-color: #222;
-	overflow: scroll;
-	float: left;
+	/*height: 100%;*/
+	/*background-color: #222;*/
+	/*overflow: scroll;*/
+	/*float: left;*/
 }
 
 .md-item:nth-child(even) {
-	background-color: #444;
+	/*background-color: #444;*/
 }
 
 .md-item-header {
-	display: table;
+	/*display: table;*/
 }
 
 .md-item-header > * {
-	text-align: center;
-	vertical-align: middle;
-	display: table-cell;
+	/*text-align: center;*/
+	/*vertical-align: middle;*/
+	/*display: table-cell;*/
 }
 
 .md-item-header > a {
-	width: 32px;
-	height: 32px;
+	/*width: 32px;*/
+	/*height: 32px;*/
 }
 
 .md-item-title.expand::before {
 	content: "> ";
-	color: #ccc;
+	/*color: #ccc;*/
 }
 
 .md-item-tag {
-	color: #66f;
+	/*color: #66f;*/
 }
 
 /* create styles */
 #md-page-create {
-	height: 100%;
-	float: left;
-	background-color: #222;
+	/*height: 100%;*/
+	/*float: left;*/
+	/*background-color: #222;*/
 }
 
 .md-h {
 	padding: 8px 0 0 5px;
-	height: 24px;
-	background-color: #444;
+	/*height: 24px;*/
+	/*background-color: #444;*/
 }
 
 #md-tool {
-	width: 100%;
-	height: 32px;
-	color: white;
+	/*width: 100%;*/
+	/*height: 32px;*/
+	/*color: white;*/
 }
 
 .md-tool-button {
@@ -121,7 +255,7 @@ h1, h2, h3, h4, h5, p {
 #md-body-wrap {
 	width: 100%;
 	height: 50%;
-	overflow: scroll;
+	/*overflow: scroll;*/
 }
 
 #md-body {
@@ -131,8 +265,8 @@ h1, h2, h3, h4, h5, p {
 	padding: 0;
 	border: none;
 	border-radius: 0;
-	background-color: #222;
-	color: #ccc;
+	/*background-color: #222;*/
+	/*color: #ccc;*/
 }
 
 #md-tag-input {
@@ -141,37 +275,37 @@ h1, h2, h3, h4, h5, p {
 	margin: 0;
 	padding: 0;
 	border: none;
-	background-color: #222;
-	color: #ccc;
+	/*background-color: #222;*/
+	/*color: #ccc;*/
 }
 
 #md-tag-input:focus {
-	outline: none;
+	/*outline: none;*/
 }
 
 .md-tag-item:nth-child(odd) {
-	background-color: #444;
+	/*background-color: #444;*/
 }
 
 .md-tag-header {
-	display: table;
+	/*display: table;*/
 }
 
 .md-tag-header > * {
-	text-align: center;
-	vertical-align: middle;
-	display: table-cell;
+	/*text-align: center;*/
+	/*vertical-align: middle;*/
+	/*display: table-cell;*/
 }
 
 .md-tag-header > a {
-	width: 32px;
-	height: 32px;
+	/*width: 32px;*/
+	/*height: 32px;*/
 }
 
 /* console styles */
 #md-page-console {
-	height: 100%;
-	background-color: #222;
-	overflow: scroll;
-	float: left;
+	/*height: 100%;*/
+	/*background-color: #222;*/
+	/*overflow: scroll;*/
+	/*float: left;*/
 }
