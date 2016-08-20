@@ -18,13 +18,10 @@ $(() => {
 	const onResize = (e) => {
 		const w = window.innerWidth;
 		const h = window.innerHeight;
-		const main = $('#md-main');
-		main.width(w);
-		main.height(h);
+		$('.fit').width(w).height(h);
 		// XXX -32px for page
-		for (const e of $('.page')) {
-			$(e).width(w - 32);
-		}
+		$('.flex-w-32').width(w - 32);
+		console.log(w, h);
 	};
 	onResize(null);
 

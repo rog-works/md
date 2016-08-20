@@ -25,9 +25,7 @@ class Console {
 	}
 
 	put (...args) {
-		for (const arg of args) {
-			this.lines.push(new ConsoleLine(arg));
-		}
+		this.lines.push(new ConsoleLine(args.join(' ')));
 	}
 
 	clear () {
