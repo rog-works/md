@@ -53,7 +53,7 @@ class MD {
 
 	update () {
 		MD.send(`/${this.id}.json`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
-			this.copyFromEntity(entity);
+			// this.copyFromEntity(entity);
 		});
 	}
 
