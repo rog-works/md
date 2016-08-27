@@ -36,7 +36,7 @@ class Tag {
 	}
 
 	static create (name, callback) {
-		Tag.send('/', {type: 'POST', data: {tag: name}}, callback);
+		Tag.send('/.json', {type: 'POST', data: {tag: name}}, callback);
 	}
 
 	search () {
