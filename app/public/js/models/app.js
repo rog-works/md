@@ -2,7 +2,7 @@ class App {
 	constructor () {
 		this.console = new Console();
 		this.page = ko.observable('index');
-		this.mds = ko.observableArray([]);
+		this.md = new MDEntry();
 		this.maker = MD.empty();
 		this.tags = ko.observableArray([]);
 		this.tagMaker = Tag.empty();
@@ -21,13 +21,7 @@ class App {
 	}
 
 	load () {
-		MD.index((entities) => {
-			this.mds.removeAll();
-			for (const entity of entities) {
-				this.mds.push(new MD(entity));
-			}
-			console.log('Loaded mds.');
-		});
+		this.md.load();
 		Tag.index((entities) => {
 			this.tags.removeAll();
 			for (const entity of entities) {

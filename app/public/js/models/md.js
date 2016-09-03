@@ -1,14 +1,41 @@
-class MD {
-	constructor (entity) {
-		this.id = Number(entity.id);
-		this.title = ko.observable(entity.title);
-		this.body = ko.observable(entity.body || '');
-		this.tags = ko.observableArray(entity.tags || '');
-		this.content = ko.observable('');
-		this.closed = ko.observable(true);
+class MDEntry {
+	constructor () {
+		this.mds = ko.observableArray();
+		this.icon = {
+			'fa-search': ko.observable(true),
+			'fa-check-circle': ko.observable(false),
+			'fa-refresh': ko.observable(false),
+			'fa-spin': ko.observable(false)
+		};
 	}
 
-	static send (url, data, callback) {
+	load () {
+		MDModel.index((entities) => {
+			this.mds.removeAll();
+			for (const entity of entities) {
+				this.mds.push(new MD(entity));
+			}
+			console.log('Loaded mds');
+		});
+	}
+
+	transition (state) {
+		for (const key in this.icon) {
+			this.icon[key](false);
+		}
+		if (state === 'connect') {
+			this.icon['fa-refresh'](true);
+			this.icon['fa-spin'](true);
+		} else if ('modify') {
+			this.icon['fa-check-circle'](true);
+		} else {
+			this.icon['fa-sitemap'](true);
+		}
+	}
+}
+
+class MDModel {
+	static send (url, data, callback, error = null) {
 		const _url = `/md${url}`;
 		let _data = {
 			url: _url,
@@ -19,6 +46,9 @@ class MD {
 				callback(res);
 			},
 			error: (res, err) => {
+				if (error !== null) {
+					error(err);
+				}
 				console.error(err, res.status, res.statusText, res.responseText);
 			}
 		};
@@ -28,20 +58,31 @@ class MD {
 
 	static index (callback) {
 		let filter = ['id', 'title'].join('|');
-		MD.send(`/.json?filter=${filter}`, {type: 'GET'}, callback);
+		MDModel.send(`/.json?filter=${filter}`, {type: 'GET'}, callback);
 	}
 
 	static search (tagId, callback) {
 		let filter = ['id', 'title'].join('|');
-		MD.send(`/search/${tagId}.json?filter=${filter}`, {type: 'GET'}, callback);
+		MDModel.send(`/search/${tagId}.json?filter=${filter}`, {type: 'GET'}, callback);
 	}
 
 	static create (body, callback) {
-		MD.send('/.json', {type: 'POST', data: {body: body}}, callback);
+		MDModel.send('/.json', {type: 'POST', data: {body: body}}, callback);
 	}
 
 	static destroy (id, callback) {
-		MD.send(`/${id}.json`, {type: 'DELETE'}, callback);
+		MDModel.send(`/${id}.json`, {type: 'DELETE'}, callback);
+	}
+}
+
+class MD {
+	constructor (entity) {
+		this.id = Number(entity.id);
+		this.title = ko.observable(entity.title);
+		this.body = ko.observable(entity.body || '');
+		this.tags = ko.observableArray(entity.tags || '');
+		this.content = ko.observable('');
+		this.closed = ko.observable(true);
 	}
 
 	static empty () {
@@ -52,9 +93,24 @@ class MD {
 	}
 
 	update () {
-		MD.send(`/${this.id}.json`, {type: 'PUT', data: {body: this.body()}}, (entity) => {
-			// this.copyFromEntity(entity);
-		});
+		LIB.md.transition('connect');
+		MDModel.send(
+			`/${this.id}.json`,
+			{type: 'PUT', data: {body: this.body()}},
+			(entity) => {
+				// this.copyFromEntity(entity);
+				LIB.md.transition('run');
+			},
+			(err) => {
+				LIB.md.transition('modify');
+			}
+		);
+	}
+	
+	changed () {
+		if (this.icon['fa-search']()) {
+			LIB.md.transition('modify');
+		}
 	}
 
 	show () {
@@ -65,10 +121,18 @@ class MD {
 	}
 
 	load () {
-		this.body('<img src="' + LIB.params.waitImgUrl + '" />');
-		MD.send(`/${this.id}.json`, {}, (entity) => {
-			this.copyFromEntity(entity);
-		});
+		LIB.md.transition('connect');
+		MDModel.send(
+			`/${this.id}.json`,
+			{},
+			(entity) => {
+				this.copyFromEntity(entity);
+				LIB.md.transition('run');
+			},
+			(err) => {
+				LIB.md.transition('run');
+			}
+		);
 	}
 
 	delete () {
@@ -77,22 +141,40 @@ class MD {
 	}
 
 	tagged (tag, callback) {
-		MD.send(`/${this.id}/${tag.id}.json`, {type: 'PUT'}, (relation) => {
-			this.tags.push(tag);
-			callback(tag);
-		});
+		LIB.md.transition('connect');
+		MDModel.send(
+			`/${this.id}/${tag.id}.json`,
+			{type: 'PUT'},
+			(relation) => {
+				this.tags.push(tag);
+				callback(tag);
+				LIB.md.transition('run');
+			},
+			(err) =>{
+				LIB.md.transition('run');
+			}
+		);
 	}
 
 	untagged (tag, callback) {
-		MD.send(`/${this.id}/${tag.id}.json?filter=tagId`, {type: 'DELETE'}, (relations) => {
-			const removeIds = relations.map((self) => {
-				return Number(self.tagId);
-			});
-			const target = this.tags.remove((self) => {
-				return removeIds.indexOf(self.id) !== -1;
-			}).pop();
-			callback(target);
-		});
+		LIB.md.transition('connect');
+		MDModel.send(
+			`/${this.id}/${tag.id}.json?filter=tagId`,
+			{type: 'DELETE'},
+				(relations) => {
+				const removeIds = relations.map((self) => {
+					return Number(self.tagId);
+				});
+				const target = this.tags.remove((self) => {
+					return removeIds.indexOf(self.id) !== -1;
+				}).pop();
+				callback(target);
+				LIB.md.transition('run');
+			},
+			(err) => {
+				LIB.md.transition('run');
+			}
+		);
 	}
 
 	edit () {

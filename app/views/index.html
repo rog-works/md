@@ -67,13 +67,19 @@
 			</div>
 			<div class="bc1 right w1 fill-h">
 				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'index'}">
-					<div class="cell center" data-bind="click: activate.bind($data, 'index')"><i class="fa fa-search"></i></div>
+					<div class="cell center" data-bind="click: activate.bind($data, 'index')">
+						<i class="fa fa-search"></i>
+					</div>
 				</div>
 				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'create'}">
-					<div class="cell center" data-bind="click: activate.bind($data, 'create')"><i class="fa fa-pencil"></i></div>
+					<div class="cell center" data-bind="click: activate.bind($data, 'create')">
+						<i class="fa fa-pencil" data-bind=""></i>
+					</div>
 				</div>
 				<div class="bc1 wh1 table" data-bind="css: { active: page() === 'console'}">
-					<div class="cell center" data-bind="click: activate.bind($data, 'console')"><i class="fa fa-commenting"></i></div>
+					<div class="cell center" data-bind="click: activate.bind($data, 'console')">
+						<i class="fa fa-commenting"></i>
+					</div>
 				</div>
 			</div>
 		</div>
