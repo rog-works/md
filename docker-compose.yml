@@ -1,0 +1,13 @@
+version: '2'
+services:
+  md-db:
+    extends:
+      file: ~/editor/db/compose/db.yml
+      service: db
+
+  md-app:
+    extends:
+      file: ~/editor/md/compose/md.yml
+      service: app
+    links:
+      - editor-db

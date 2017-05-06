@@ -1,0 +1,13 @@
+version: '2'
+services:
+  app:
+    container_name: md-app
+    image: md-app:latest
+    build: ../docker
+    volumes:
+      - ../app:/opt/app
+    ports:
+      - 18081:80
+    environment:
+      MAIN_SCRIPT: /opt/app/server.js
+      PORT: 80

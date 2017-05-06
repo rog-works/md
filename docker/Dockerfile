@@ -1,4 +1,4 @@
-FROM node:6.2.2-slim
+FROM node:7.9-alpine
 
 ENV MAIN_SCRIPT /opt/app/server.js
 ENV PORT 8080
@@ -8,10 +8,7 @@ ADD opt/ /opt/
 WORKDIR /opt
 
 # Install
-RUN apt-get update \
- && apt-get install -y vim --no-install-recommends \
- && rm -rf /var/lib/apt/lists/* \
- && npm install --production \
- && npm cache clean
+RUN yarn install \
+ && yarn cache clean
 
 CMD node ${MAIN_SCRIPT}
